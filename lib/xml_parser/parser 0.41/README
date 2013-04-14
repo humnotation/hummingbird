@@ -1,0 +1,40 @@
+MXVF Parser
+
+Interprets MusicXml files and renders onto a web page using VexFlow in Canvas mode.
+
+The source code has rather long lines, much longer than the recommended 80 according to JSLint.  Following JSLint I started indenting by 4 instead of 2, but VexFlow itself uses 2 so that is what I was doing when I started.
+
+To run the programs:
+
+Put the parser folder (0.41 renamed to 'parser' or 'MXVF' or whatever) in a web location where the web server can serve it.
+
+Navigate to http://..../MXVF/parser.html
+
+To change what is displayed, edit the input_parameters.js selections
+
+Files:
+
+Front End
+
+parser.html          - displays a page of music
+input_parameters.js  - control which input file and which page of it to display.
+
+Other .js files deal with musical elements of from MusicXML:
+
+MXVF.js - namespace  (I'm copying how VexFlow is organized actually)
+canvas.js - interface to VexFlow and HTML5 canvas functions
+scaling.js - read the XML scaling info and set up canvas scaling, margins, etc
+readMusic.js - read the XML file and initiate processing 
+writeMusic.js - coordinate the XML-reading VexFlow-writing operations
+page.js - coordinate which page to process vs. which page to display
+credits.js - put the title and attributions on the canvas from the XML
+staves.js - read staves data from XML. Some useful functions may be here
+staffStepper.js - handles new page, new set of staves, new measure
+measurePrint.js - handle measure elements for print control
+measureAttributes.js - handle measure elements for staves setup (clefs, time)
+measure.js - read measure info, continue processing using note.js
+note.js - file is too big, does voices, chords, notes, accidentals etc
+ties.js - match up begin notes and end notes from ties
+
+
+
