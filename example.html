@@ -1,0 +1,27 @@
+<html>
+<head>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+	<script type="text/javascript" src="lib/vexflow/vexflow-min.js"></script>
+
+	<script type="text/javascript">
+	$(document).ready(function() {
+		// demonstration from http://www.vexflow.com/docs/tutorial.html
+		var canvas = $("canvas")[0];
+		var renderer = new Vex.Flow.Renderer(canvas, Vex.Flow.Renderer.Backends.CANVAS);
+		var ctx = renderer.getContext();
+
+		var stave = new Vex.Flow.Stave(10, 0, 500);
+		stave.addClef("treble").setContext(ctx).draw();
+	});
+
+	</script>
+</head>
+<body>
+	<b>Hummingbird Example</b>
+	<p>
+		If you don't see an empty stave with one treble clef, check your javascript console!
+	<p>
+		<canvas width="700" height="100"></canvas>
+	</p>
+</body>
+</html>
