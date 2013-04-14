@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+<title>Experiments</title>
+</head>
+<body>
+<script>
+
+function message(msg) {
+   var p = document.createElement("p");
+   p.innerHTML = msg;
+   document.body.appendChild(p);
+}
+
+function experiments() {
+  //This shows that an array property or object property can be a number or a string interchangeably
+  var t = ["a","b","c"];
+  var x = {"1":"u", "2":"v", "3":"w"};
+
+  // are string keys and integer keys interchanable in an array?
+  // it does parseInt to the strings, in other words?   
+  message("Array: t[1]= " + t[1] + " t['1']=" + t['1'] + 
+         "Object: x[2]=" + x[2] + " x['2']=" + x['2']);
+ 
+  // does an object have length? of course not, only arrays do.
+  message("Length of object: " + x.length);
+  var w = [];
+  w["the-onion"] = "www";
+  w["ny times"] = "www";
+  message("Length of array w with string keys: " + w.length);
+  message("but w has object properties in it: " + w["the-onion"]);
+}
+
+</scri
+<a href="javascript:experiments()">Experiments</a>
+<div id="experiments"></div>
+</body>
+</html>
+
