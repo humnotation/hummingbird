@@ -4,9 +4,13 @@
   <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
   <title>Humming Bird</title>
 
+  <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css" media="screen">
+
+
   <!-- Useful Javascript -->
   <script src="js/libs/jquery-min.js"></script>
   <script src="js/libs/raphael.js"></script>
+  <script src="js/libs/bootstrap.min.js"></script>
 
   <!-- VexFlow Compiled Source -->
   <script src="js/libs/vexflow-free.js"></script>
@@ -55,12 +59,18 @@
 </head>
 <body>
 
-<input type="file" id="files" name="file" />
-<button onclick="abortRead();">Cancel read</button>
-<div id="progress_bar"><div class="percent">0%</div></div>
+<div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="brand" href="#">Humming Bird</a>
+          <input type="file" id="files" name="file" />
+          <button class="btn" onclick="abortRead();">Cancel read</button>
+          <div id="progress_bar"><div class="percent">0%</div></div>
+          <div id="error-message"></div>
+        </div>
+      </div>
+    </div>
 
-
-<div id="error-message"></div>
 
 <div>
   <canvas id="canvas" width="1114" height="1414" style="background-color: #FFFFD0"></canvas>
