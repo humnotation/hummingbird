@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Hummingbird Mocha Tests</title>
+        <link rel="stylesheet" href="../components/mocha/mocha.css" type="text/css" charset="utf-8" />
+    </head>
+    <body>
+        <div id="mocha"></div>
+
+        <script src="../components/mocha/mocha.js"></script>
+
+        <script src="../components/requirejs/require.js"></script>
+        <script>
+            requirejs.config(
+            {
+                baseUrl: '../app',
+                paths: { specs: '../test/specs' }
+            });
+
+            requirejs(
+            [
+                "underscore",
+                "chai",
+                "sinon",
+                "sinon-chai",
+                "jquery",
+            ],
+            function(
+                _,
+                chai,
+                sinon,
+                sinonChai,
+                $
+            )
+            {
+                $.fx.off = true;
+
+                mocha.setup("bdd");
+                mocha.timeout(10000);
+
+                chai.use(sinonChai);
+
+                window.expect = chai.expect;
+          
+                requirejs(
+                [
+                    "../test/specs"
+                ],
+                function(specs)
+                {
+                    mocha.run();
+                });
+
+            });
+        </script>
+    </body>
+</html>

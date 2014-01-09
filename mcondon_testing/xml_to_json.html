@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+
+<body>
+    <div></div>
+  <script src="./components/requirejs/require.js"></script>
+  <script src="./src/requireJsConfig.js"></script>
+  <script>
+    require(
+            [
+            "jquery",
+            "lodash",
+            "xml2json",
+            "fileHandling/fileUploader"
+            ], function(
+                $,
+                _,
+                xml2json,
+                FileUploadHandler
+            ) { 
+
+        var fileUploader = new FileUploadHandler($("input[name=fileInput]"));
+
+        fileUploader.onFileLoaded(function(xml)
+        {
+            $("textarea[name=xml]").val(xml);
+            var json = xml2json(xml, { attrkey: "attributes", charkey: "_", normalize: true });
+            $("textarea[name=json]").val(JSON.stringify(json));
+        });
+    });
+  </script>
+
+
+    <input type="file" name="fileInput" />
+
+    <br/>
+
+    <b>XML</b><br/>
+    <textarea name="xml" rows="15" cols="80"></textarea>
+    <br/>
+
+    <b>JSON</b><br/>
+    <textarea name="json" rows="15" cols="80"></textarea>
+</body>
+</html>
+

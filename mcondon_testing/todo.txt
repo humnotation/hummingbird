@@ -1,0 +1,6 @@
+bower
+xml upload form
+xml to json proof of concept
+simple vexflow test
+
+see gtd notes
