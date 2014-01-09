@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+
+<body>
+    <div></div>
+  <script src="./components/requirejs/require.js"></script>
+  <script src="./src/requireJsConfig.js"></script>
+  <script>
+    require(
+            [
+            "jquery",
+            "lodash",
+            "xml2json",
+            "fileHandling/fileUploader",
+            "vexflow",
+            "vexHelpers/JSON2Vex"
+            ], function(
+                $,
+                _,
+                xml2json,
+                FileUploadHandler,
+                Vex,
+                JSON2Vex
+            ) { 
+
+        var fileUploader = new FileUploadHandler($("input[name=fileInput]"));
+
+        fileUploader.onFileLoaded(function(xml)
+        {
+            var json = xml2json(xml, { attrkey: "_attrs", charkey: "_", normalize: true });
+            var j2v = new JSON2Vex(Vex, json, $("canvas")[0]);
+            console.log(json);
+            j2v.render();
+        });
+    });
+  </script>
+
+
+    <input type="file" name="fileInput" />
+
+    <p>
+        <canvas width="700" height="600"></canvas>
+    </p>
+
+</body>
+</html>
+

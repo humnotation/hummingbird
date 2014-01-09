@@ -1,6 +1,3 @@
-bower
-xml upload form
-xml to json proof of concept
-simple vexflow test
-
-see gtd notes
+create voice details - rename to parse
+add staves to voice
+add notes to voice stave
