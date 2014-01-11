@@ -4,7 +4,7 @@ requirejs.config(
     paths: {
         lodash: "../components/lodash/dist/lodash",
         jquery: "../components/jquery/jquery",
-        xml2json: "../components/jquery-xml2json/src/xml2json",
+        xml2json: "../lib/xml2json",
         vexflow: "../lib/vexflow/vexflow-min",
         chai: "../components/chai/chai",
         mocha: "../components/mocha/mocha",
@@ -15,9 +15,6 @@ requirejs.config(
         resources: "../resources"
     },
     shim: {
-        xml2json: {
-            exports: "xml2json"
-        },
         vexflow: {
             exports: "Vex"
         },

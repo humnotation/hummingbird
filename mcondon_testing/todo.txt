@@ -35,7 +35,9 @@ html proof of concept two measures:
 
     add sharps/flats
     add duration
+    add duration bars
     add ledger lines
+    add direction text
     add grouping ofset
 
 compare html output to pdf

@@ -1,9 +1,10 @@
+
 /**
- * jQuery plugin to convert a given $.ajax response xml object to json.
- *
- * @example var json = $.xml2json(response);
- */
-(function() {
+*
+Modified to be amd module instead of jquery plugin
+from jquery-xml2json project
+*/
+define([], function() {
 
 	// default options based on https://github.com/Leonidas-from-XIV/node-xml2js
 	var defaultOptions = {
@@ -115,13 +116,5 @@
 		return root;
 	}
 
-	if (typeof jQuery !== 'undefined') {
-		jQuery.extend({xml2json: xml2json});
-	} else if (typeof module !== 'undefined') {
-		module.exports = xml2json;
-	} else if (typeof window !== 'undefined') {
-		window.xml2json = xml2json;
-	}
-
 	return xml2json;
-})();
+});
