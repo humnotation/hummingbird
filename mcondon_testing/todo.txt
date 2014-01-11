@@ -1,3 +1,49 @@
-create voice details - rename to parse
-add staves to voice
-add notes to voice stave
+
+tests:
+    get mocha/chai running
+
+parser with tests:
+    rename voice to part
+    part -> stave -> notes
+        add staves to voice
+        add clef to stave per measure
+        add notes to stave per measure
+
+finish vexflow couple measures:
+
+    draw each measure:
+        stave
+            clef
+            notes
+
+    measures 1-8
+    compare to pdf
+
+html proof of concept two measures:
+    make parsing structure reuseable
+    css for staves, clefs, basic noteheads
+
+    do all rendering to element in memory and then attach to canvas
+    draw div per stave
+        with clef
+        with note
+
+    note spacing css
+    note letter offset css
+        by staff
+    note octave offset css by staff
+
+    add sharps/flats
+    add duration
+    add ledger lines
+    add grouping ofset
+
+compare html output to pdf
+
+review goals and next steps w/ project owner and other devs
+
+
+README:
+    create a readme.md
+    add (and test) install and run instructions
+    notes on next steps etc

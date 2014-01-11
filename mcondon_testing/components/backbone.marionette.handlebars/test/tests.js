@@ -1,0 +1,1 @@
+module('Backbone.Marionette.Handlebars');

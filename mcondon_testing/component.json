@@ -11,6 +11,10 @@
     "requirejs": "~2.1.9",
     "jquery": "~2.0.3",
     "lodash": "~2.4.1",
+    "mocha": "~1.16.1",
+    "chai": "~1.8.1",
+    "sinon": "http://sinonjs.org/releases/sinon-1.7.3.js",
+    "sinon-chai": "https://raw.github.com/domenic/sinon-chai/2.4.0/lib/sinon-chai.js",
     "jquery-xml2json": "~0.0.5"
   }
 }

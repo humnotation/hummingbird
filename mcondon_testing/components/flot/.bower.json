@@ -1,0 +1,17 @@
+{
+  "name": "Flot",
+  "main": "jquery.flot.js",
+  "dependencies": {
+    "jquery": ">= 1.2.6"
+  },
+  "homepage": "https://github.com/TrainingPeaks/flot",
+  "_release": "098f44a034",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "098f44a0345dcf16b85cbcf2eb45eb15c02c0770"
+  },
+  "_source": "git://github.com/TrainingPeaks/flot.git",
+  "_target": "master",
+  "_originalSource": "TrainingPeaks/flot"
+}
