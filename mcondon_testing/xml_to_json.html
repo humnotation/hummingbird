@@ -10,12 +10,12 @@
             [
             "jquery",
             "lodash",
-            "xml2json",
+            "musicXMLParser",
             "fileHandling/fileUploader"
             ], function(
                 $,
                 _,
-                xml2json,
+                MusicXMLParser,
                 FileUploadHandler
             ) { 
 
@@ -24,7 +24,7 @@
         fileUploader.onFileLoaded(function(xml)
         {
             $("textarea[name=xml]").val(xml);
-            var json = xml2json(xml, { attrkey: "attributes", charkey: "_", normalize: true });
+            var json = new MusicXMLParser(xml).parse(); 
             $("textarea[name=json]").val(JSON.stringify(json));
         });
     });

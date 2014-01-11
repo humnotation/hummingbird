@@ -10,33 +10,35 @@
         <script src="../components/mocha/mocha.js"></script>
 
         <script src="../components/requirejs/require.js"></script>
+        <script src="../src/requireJsConfig.js"></script>
         <script>
             requirejs.config(
             {
-                baseUrl: '../app',
-                paths: { specs: '../test/specs' }
+                baseUrl: '../src'
             });
 
             requirejs(
             [
-                "underscore",
+                "lodash",
                 "chai",
                 "sinon",
                 "sinon-chai",
                 "jquery",
+                "xml2json"
             ],
             function(
                 _,
                 chai,
                 sinon,
                 sinonChai,
-                $
+                $,
+                xml2json
             )
             {
                 $.fx.off = true;
 
                 mocha.setup("bdd");
-                mocha.timeout(10000);
+                mocha.timeout(5000);
 
                 chai.use(sinonChai);
 
@@ -44,9 +46,9 @@
           
                 requirejs(
                 [
-                    "../test/specs"
+                    "../tests/xml_parser.spec"
                 ],
-                function(specs)
+                function()
                 {
                     mocha.run();
                 });

@@ -42,6 +42,7 @@ compare html output to pdf
 
 review goals and next steps w/ project owner and other devs
 
+support for other score format (not score-partwise)
 
 README:
     create a readme.md
