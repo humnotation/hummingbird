@@ -2,16 +2,15 @@ requirejs.config(
 {
     baseUrl: "src",
     paths: {
-        lodash: "../components/lodash/dist/lodash",
-        jquery: "../components/jquery/jquery",
-        xml2json: "../lib/xml2json",
+        lodash: "../lib/lodash/dist/lodash",
+        jquery: "../lib/jquery/jquery",
         vexflow: "../lib/vexflow/vexflow-min",
-        chai: "../components/chai/chai",
-        mocha: "../components/mocha/mocha",
-        requirejs: "../components/requirejs/require",
-        text: "../components/requirejs-text/text",
-        sinon: "../components/sinon/index",
-        "sinon-chai": "../components/sinon-chai/index",
+        chai: "../lib/chai/chai",
+        mocha: "../lib/mocha/mocha",
+        requirejs: "../lib/requirejs/require",
+        text: "../lib/requirejs-text/text",
+        sinon: "../lib/sinon/index",
+        "sinon-chai": "../lib/sinon-chai/index",
         resources: "../resources"
     },
     shim: {
