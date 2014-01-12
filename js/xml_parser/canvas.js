@@ -10,19 +10,21 @@ var ctx = renderer.getContext();
 
 */
 
-MXVF.canvas = {
+MXVF.canvas = function(mxvf) {
+  this.height = 0;
+  this.width = 0;
+  this.domCanvas = null;
+  this.mxvf = mxvf;
+};
 
-  height: 0,
-  width: 0,
-  domCanvas: null,
-
+_.extend(MXVF.canvas.prototype, {
   init : function(domCanvas) {
-    MXVF.canvas.domCanvas = domCanvas;
-    MXVF.canvas.renderer = new Vex.Flow.Renderer(domCanvas, Vex.Flow.Renderer.Backends.CANVAS); // RAPHAEL pauses and then shows nothing
+    this.domCanvas = domCanvas;
+    this.renderer = new Vex.Flow.Renderer(domCanvas, Vex.Flow.Renderer.Backends.CANVAS); // RAPHAEL pauses and then shows nothing
   },
 
   getContext : function() {
-    return MXVF.canvas.renderer.getContext();
+    return this.renderer.getContext();
   },
 
   setPxDimensions : function(width, height) {
@@ -52,7 +54,4 @@ MXVF.canvas = {
     //console.log('measure text: text, metrics', text, metrics);
     return metrics.width;
   }
-
-}
-
-
+});

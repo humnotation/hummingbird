@@ -1,10 +1,14 @@
-// module pattern: import jQuery and MusicXML-VexFlow translator
-(function(mxvf, $) {
+MXVF.ties = function(mxvf)
+{
+    this.mxvf = mxvf;
+    this.starts = {};
+    this.matches = [];
+    this.tieId = 0;
+};
 
-    // another module pattern: define mxvf.ties
-    // export public functions only
-    // variables and functions defined within are private
-    // (function() { })() is a closure, using an anonymous function executed immediately
+
+_.extend(MXVF.ties.prototype, {
+
     
     // What is unjoin() for:
     // https://groups.google.com/forum/?fromgroups=#!searchin/vexflow/ties/vexflow/Id9MLIiYH2s/RnOHif83CPkJ
@@ -35,19 +39,11 @@
     //  also complain in log.
     //
 
-    mxvf.ties = (function () {
-
-        var starts = {},
-            matches = [],
-        
-            getTieId = (function () {
-                var tieId = 0;
-                return function () {
-                    return "T" + (tieId++);
-                };
-            })(),
+            getTieId: function () {
+                    return "T" + (this.tieId++);
+            },
             
-            makeTies = function ($note) {
+            makeTies: function ($note) {
                 // take some tie info from the xml
                 // return some sub-properties for the note
                 
@@ -86,24 +82,27 @@
                 
                 return tie;
             },
-            rememberTie = function (note, index, vexNote) {
+
+            rememberTie: function (note, index, vexNote) {
                 if (note.tie.isStart) {
                     note.tie.index = index;
                     note.tie.vexNote = vexNote;
                     note.tie.isJoinable = true;
                     var id = getTieId();
-                    starts[id] = note;
+                    this.starts[id] = note;
                     console.log("tie match: tie start remembered: id = " + id, note);
                 }
             },
-            unjoin = function () {
+
+            unjoin: function () {
                 // mark the currently unmatched start notes as unjoined
                 // they will be drawn when they are matched
-                for (var id in starts) {
-                    starts[id].tie.isJoinable = false;
+                for (var id in this.starts) {
+                    this.starts[id].tie.isJoinable = false;
                 }
             },
-            matchTies = function (stopNote, stopIndex, stopVexNote) {
+
+            matchTies: function (stopNote, stopIndex, stopVexNote) {
             
                 if (stopNote.tie.isStop) {
                     var id,                         // id - note id, loop index
@@ -120,8 +119,8 @@
                     // stage I of matching : loop to find a match based on tie number or pitch
                     
                     console.log("Tie match: matching stop note ", stopNote);
-                    for (startId in starts) {
-                        startNote = starts[startId];
+                    for (startId in this.starts) {
+                        startNote = this.starts[startId];
                         console.log("Tie match: comparing to start note",startNote);
                         matchType = "Tie match: ";
                         if (firstNumberMatch === null && 
@@ -150,16 +149,16 @@
                     
                     if (firstNumberMatch !== null) {
                         bestMatch = firstNumberMatch;
-                        console.log("Tie match: best is number match! joinable=" + starts[bestMatch].tie.isJoinable);
+                        console.log("Tie match: best is number match! joinable=" + this.starts[bestMatch].tie.isJoinable);
                     } else if (firstPitchMatch !== null) {
                         bestMatch = firstPitchMatch;
-                        console.log("Tie match: best is Pitch match! joinable=" + starts[bestMatch].tie.isJoinable);
+                        console.log("Tie match: best is Pitch match! joinable=" + this.starts[bestMatch].tie.isJoinable);
                     } else if (counter===1) {
                         bestMatch = anyMatch;
-                        console.log("Tie match: only one match, joinable=" + starts[bestMatch].tie.isJoinable);
+                        console.log("Tie match: only one match, joinable=" + this.starts[bestMatch].tie.isJoinable);
                     } else {
                         console.log("Tie match: no match for stop note.");
-                        console.log("starts: ",starts);
+                        console.log("starts: ",this.starts);
                         console.log("stop note: ",stopNote);
                     }
                 
@@ -168,10 +167,10 @@
                     
                     if (bestMatch !== null) {
                         
-                        startNote = starts[bestMatch];
+                        startNote = this.starts[bestMatch];
                         
                         if (startNote.tie.isJoinable) {
-                           matches.push({
+                           this.matches.push({
                                first_note    : startNote.tie.vexNote,
                                first_indices : [parseInt(startNote.tie.index)],
                                last_note     : stopNote.tie.vexNote,
@@ -180,49 +179,39 @@
                            console.log("indices: " + startNote.tie.index + "," + stopNote.tie.index);
 
                         } else {
-                           matches.push({
+                           this.matches.push({
                                first_note    : null,
                                last_note     : stopNote.tie.vexNote,
                                last_indices  : [parseInt(stopNote.tie.index)]
                            });
-                           matches.push({
+                           this.matches.push({
                                first_note    : startNote.tie.vexNote,
                                first_indices : [parseInt(startNote.tie.index)],
                                last_note     : null
                            });
                         }
                         
-                        delete starts[bestMatch];
+                        delete this.starts[bestMatch];
                         
                     } else {
                         // error, problem, danger
-                        MXVF.error("Tie: failed to match stop to any start. There are " + starts.length + " starts pending.");
+                        this.mxvf.error("Tie: failed to match stop to any start. There are " + this.starts.length + " starts pending.");
                     }
                 }
             },
-            renderTieMatches = function() {
+
+            renderTieMatches: function() {
                 
                 var k, matchPair;
                 
-                for (k in matches) {
-                    matchPair = matches[k];
+                for (k in this.matches) {
+                    matchPair = this.matches[k];
 
                     console.log("Attempting to render a tie: ", matchPair);
                     
-                    new Vex.Flow.StaveTie(matchPair).setContext(MXVF.canvas.getContext()).draw();
+                    new Vex.Flow.StaveTie(matchPair).setContext(this.mxvf.canvas.getContext()).draw();
                 }
                 
-                delete matches[k];
-            };
-            
-        return {
-            makeTies: makeTies,
-            rememberTie : rememberTie,
-            unjoin: unjoin,
-            matchTies : matchTies,
-            renderTieMatches : renderTieMatches
-        }
-    })();
-
-})(MXVF, jQuery);
-
+                delete this.matches[k];
+            }
+});

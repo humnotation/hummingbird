@@ -1,10 +1,12 @@
 define(
 [
     "lodash",
+    "MXVF",
     "text!resources/The Tempest/the_tempest.xml"
 ],
 function(
     _,
+    MXVF,
     tempestXML
 )
 {
@@ -16,9 +18,24 @@ function(
         {
         });
 
-        it("Should fail", function()
+        it("Should construct a parser instance", function()
         {
-            expect(false).to.be.ok;
+            var newParser = function()
+            {
+                return new MXVF();
+            };
+
+            expect(newParser).to.not.throw();
+        });
+
+        describe("Read Music", function()
+        {
+            var mxvf = new MXVF();
+
+            it("Should have a readMusic method", function()
+            {
+                expect(typeof mxvf.readMusic).to.eql("function");
+            });
         });
 
     });

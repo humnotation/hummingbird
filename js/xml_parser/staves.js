@@ -15,17 +15,19 @@
 // .makeStaves(numberOf, measureWidth) : 
 //
 
-MXVF.staves = (function (mPrint, canvas) {
+MXVF.staves = function(mxvf)
+{
+    this.mxvf = mxvf;
+    this.staves = {};
+};
 
-    var staves = {},
+_.extend(MXVF.staves.prototype, {
 
-        clearStaves = function() {
-            staves = {};
+        clearStaves: function() {
+            this.staves = {};
         },
 
-        staffStepper = mPrint.staffStepper,
-
-        makeStave = function(index, xpos, ypos, width, measureNumber) {
+        makeStave: function(index, xpos, ypos, width, measureNumber) {
 
                         //var stave = new Vex.Flow.Stave(xpos, ypos, width, {spacing_between_lines_px : 11});
                         
@@ -39,45 +41,46 @@ MXVF.staves = (function (mPrint, canvas) {
                         
                         //var stave = new Vex.Flow.Stave(xpos, ypos, width, options);
                         
-                        staves[index] = stave;
+                        this.staves[index] = stave;
                             
                         //console.log("staves.makeStave: index, x, y, width, number=" +
                         //            index + "," + xpos + "," + ypos + "," + width + "," + mNumber);
                         
                         return stave;
-                    };
+                    },
     
-    return {
         getStaves: function () {
-            return staves;  // please be careful with them after you get them
+            return this.staves;  // please be careful with them after you get them
         },
+
         getStave: function (index) {
-            return staves[index];
+            return this.staves[index];
         },
+
         makeStaves: function (measureNumber, vWidth, drawClefs, drawKeySig, drawTimeSig) {
 
             var looper,
                 xpos, 
                 ypos,
-                width = MXVF.scaling.scale(vWidth);
+                width = this.mxvf.scaling.scale(vWidth);
         
-            clearStaves();
+            this.clearStaves();
             
-            for ( looper=1; looper <= mPrint.staffNumberOf; ++looper ) {
-                xpos = MXVF.scaling.x(mPrint.getStaffX());
-                ypos = MXVF.scaling.y(mPrint.getStaffTop(looper));
+            for ( looper=1; looper <= this.mxvf.measurePrint.staffNumberOf; ++looper ) {
+                xpos = this.mxvf.scaling.x(this.mxvf.measurePrint.getStaffX());
+                ypos = this.mxvf.scaling.y(this.mxvf.measurePrint.getStaffTop(looper));
                 
-                var stave = makeStave(looper, xpos, ypos, width, measureNumber);
+                var stave = this.makeStave(looper, xpos, ypos, width, measureNumber);
             }
             
-            console.log("made staves", staves);
+            console.log("made staves", this.staves);
         },
+
         drawStaves: function () {
-            for (var index in staves) {
-                staves[index].setContext(canvas.getContext()).draw();
+            for (var index in this.staves) {
+                this.staves[index].setContext(this.mxvf.canvas.getContext()).draw();
             }
         }
-    };
-})(MXVF.measurePrint, MXVF.canvas);
+    });
 
 

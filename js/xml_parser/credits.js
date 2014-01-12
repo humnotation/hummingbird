@@ -6,12 +6,15 @@
 // After the Credit objects are created they have to be stored
 // They are rendered when the page number matches
 
-MXVF.credit = function($creditXml) {
+MXVF.credit = function($creditXml, mxvf) {
+
 
   // This method is a constructor. If not, complain. 
   // Todo: figure out what "Error" is
   if ( !(this instanceof arguments.callee) ) 
      throw new Error("Constructor called as a function");
+
+  this.mxvf = mxvf;
 
   if ($creditXml[0].nodeName == "credit") {
 
@@ -32,25 +35,29 @@ MXVF.credit = function($creditXml) {
   } else {
     console.log('credit text: ' + $creditXml.text());
     console.log($creditXml);
-    MXVF.error('no credit node found');
+    this.mxvf.error('no credit node found');
   };
 
-  this.toDebugString = function(){ 
+};
+
+_.extend(MXVF.credit.prototype, {
+
+  toDebugString: function(){ 
     return "page,dx,dy,fontsize,justify,creditowrds =" +
            this.page + ", " + this.defaultX + ", " +
            this.defaultY + ", " +this.fontSize+ ", " +this.justify+ ", " + this.creditWords; 
-  };
+  },
 
-  this.render = function() {
+  render: function() {
 
     console.log('Rendering',this.toDebugString());
-    if (MXVF.page.isPageVisible(this.page)) {
+    if (this.mxvf.page.isPageVisible(this.page)) {
 
-      var ctx = MXVF.canvas.getContext();
+      var ctx = this.mxvf.canvas.getContext();
       ctx.font = "" + this.fontSize + "px Ariel";
 
-      var xpix = MXVF.scaling.x(this.defaultX);
-      var ypix = MXVF.scaling.y(this.defaultY);
+      var xpix = this.mxvf.scaling.x(this.defaultX);
+      var ypix = this.mxvf.scaling.y(this.defaultY);
 
       if (this.justify==="left" || this.justify==="right" || this.justify==="center") {
         ctx.textAlign = this.justify;
@@ -70,20 +77,24 @@ MXVF.credit = function($creditXml) {
       ctx.fillText(this.creditWords, xpix,ypix);
     }
     
-  };
+  }
+});
 
+MXVF.credits = function(mxvf)
+{
+  this.creditData = [];
+  this.mxvf = mxvf;
 };
 
-MXVF.credits = {
-
-  creditData: [],
+_.extend(MXVF.credits.prototype, {
 
   init: function($creditsArray) {
+    var self = this;
     jQuery.each($creditsArray, function(index, creditXml) {
        console.log('index,creditXml',index,creditXml);
-       var credit = new MXVF.credit(jQuery(creditXml));
+       var credit = new MXVF.credit(jQuery(creditXml), self.mxvf);
        console.log('made a credit! ' + credit.toDebugString());
-       MXVF.credits.creditData.push(credit);
+       self.creditData.push(credit);
     });
   },
 
@@ -108,13 +119,11 @@ MXVF.credits = {
   },
 
   renderCredits: function() {
-    var creditData = MXVF.credits.creditData;
-    for (k in creditData) {
-      creditData[k].render();  // this knows to check the page number
-    }
+    _.each(this.creditData, function(credit)
+    {
+      credit.render();
+    });
   }
 
-};
-
-
+});
 

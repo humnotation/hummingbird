@@ -1,11 +1,15 @@
 // measureAttributes
 
-MXVF.measureAttributes = {
 
-   beatsPerMeasure: 4,    // default beats per measure (four beats)
-   beatsType: 4,          // default type of note note for beat (quarter note)
-   printTime: true,       // true/false: do/don't print the default
-   
+MXVF.measureAttributes = function(mxvf) {
+  this.mxvf = mxvf;
+  this.beatsPerMeasure = 4;    // default beats per measure (four beats)
+  this.beatsType = 4;          // default type of note note for beat (quarter note)
+  this.printTime = true;      // true/false: do/don't print the default
+};
+
+_.extend(MXVF.measureAttributes.prototype, {
+
   // data table not found on VexFlow/src/music.js or VexFlow/src/tables.js
   // the XML input for the key requires using the Circle of Fifths
   // It surely could be derived from music.js using an algorithm,
@@ -132,7 +136,7 @@ MXVF.measureAttributes = {
               clefType = this.clefTypes[clef.sign];
          
               if (clefType) {
-                  vexStave = MXVF.staves.getStave(clefNumber);
+                  vexStave = this.mxvf.staves.getStave(clefNumber);
                   if (vexStave) {
                       vexStave.addClef(clefType);              
                       console.log("measureAttributes: added clef ", clefType, " to stave number " + clefNumber);
@@ -147,8 +151,8 @@ MXVF.measureAttributes = {
       
       // add the time signature only once, if it is not yet printed yet
       if (drawTimeSig === true) {
-          for (staveNumber in MXVF.staves.getStaves()) {
-              MXVF.staves.getStave(staveNumber).addTimeSignature(this.beatsPerMeasure + "/" + this.beatsType);
+          for (staveNumber in this.mxvf.staves.getStaves()) {
+              this.mxvf.staves.getStave(staveNumber).addTimeSignature(this.beatsPerMeasure + "/" + this.beatsType);
           }
       }
       
@@ -159,15 +163,15 @@ MXVF.measureAttributes = {
          var vexKey = this.keySymbol[this.keyFifths + "," + this.keyMode];
          if (vexKey) {
              var keySig = new Vex.Flow.KeySignature(vexKey);
-             for (staveNumber in MXVF.staves.getStaves()) {
-                 keySig.addToStave(MXVF.staves.getStave(staveNumber));
+             for (staveNumber in this.mxvf.staves.getStaves()) {
+                 keySig.addToStave(this.mxvf.staves.getStave(staveNumber));
              }
           } else {
-             MXVF.error("unsupported key type: fifths=" + this.keyFifths + ", mode=" + this.keyMode);
+             this.mxvf.error("unsupported key type: fifths=" + this.keyFifths + ", mode=" + this.keyMode);
           }
       }
   
   }
 
-};
+});
 

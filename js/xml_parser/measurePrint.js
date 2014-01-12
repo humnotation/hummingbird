@@ -2,7 +2,12 @@
 // This object acts like a state variable
 // Read other XML data into some javascript variables
 //
-MXVF.measurePrint = {
+MXVF.measurePrint = function(mxvf)
+{
+  this.mxvf = mxvf;
+};
+
+_.extend(MXVF.measurePrint.prototype, {
 
   // init($xml) 
   // input: jQuery-adapted XML node with <print> element in a <measure> element in the MusicXML file
@@ -45,7 +50,7 @@ MXVF.measurePrint = {
 
     // set up the StaffStepper if it isn't
     if ( !this.staffStepper ) {
-        this.staffStepper = MXVF.staffStepper.makeStaffStepper(this);
+        this.staffStepper = this.mxvf.staffStepper;
     }
     
     // Advance the StaffStepper to new page or new group of staves
@@ -70,7 +75,7 @@ MXVF.measurePrint = {
   // in other files about twice the height of a staff, which is better
   // these are in XML coords
   adjustDistance: function (distance) {
-      var staffHeight = MXVF.scaling.vestStaffHeight;
+      var staffHeight = this.mxvf.scaling.vestStaffHeight;
       if (distance < (2.0 * staffHeight)) {
           console.log("measurePrint: adjust distance " + distance + " by staff height " + staffHeight);
           distance += staffHeight;
@@ -87,7 +92,7 @@ MXVF.measurePrint = {
 
   // pageStaffTop: vertical canvas coordinate for the first staff on a page
   pageStaffTop: function () {
-      var ret= MXVF.scaling.vpageHeight - this.topSystemDistance;
+      var ret= this.mxvf.scaling.vpageHeight - this.topSystemDistance;
       console.log("measurePrint: pageStaffTop() = ",ret);
       return ret;
   },
@@ -101,7 +106,7 @@ MXVF.measurePrint = {
 
   // nextStaffTop: vertical canvas coordinate for a staff that is not the first in its group
   nextStaffTop: function (currentTop) {
-      var ret = currentTop - this.staffDistance - MXVF.scaling.vestStaffHeight;
+      var ret = currentTop - this.staffDistance - this.mxvf.scaling.vestStaffHeight;
       //var ret = currentTop - this.staffDistance;
 
       console.log("measurePrint: nextStaffTop() = ",ret);
@@ -126,5 +131,5 @@ MXVF.measurePrint = {
       return this.staffStepper.newMeasure(width);
   }
   
-}
+});
 

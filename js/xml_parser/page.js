@@ -18,65 +18,67 @@
 // the functional expression returns an object with methods in it, which access
 // the private variables visiblePage, currentPage, etc
 
-MXVF.page = (function() {
+MXVF.page = function(mxvf)
+{
+  this.mxvf = mxvf;
 
-  // static-like state variables
-  var visiblePage= -1,    // comes from parameter. 0 means all, -1 means none yet
-      currentPage= 0,     // this is updated as the input file is proces
-      firstPage= 1,       // assume 1 but it should be in the Credits but there might not be Credits
-      isFirstPage= true;  // waiting for first page
+  this.visiblePage = -1;    // comes from parameter. 0 means all, -1 means none yet
+  this.currentPage = 0;     // this is updated as the input file is proces
+  this.firstPage = 1;       // assume 1 but it should be in the Credits but there might not be Credits
+  this.isFirstPage = true;  // waiting for first page
+};
       
-  return {
+_.extend(MXVF.page.prototype, {
       setVisiblePage: function(pageVal) {
         console.log('setVisiblePage ' + pageVal);
         var n = parseInt(pageVal,10);
         if ( isNaN(n) || ( "" + pageVal ) !== ( "" + n ) ) {
-          MXVF.error("Non-integer (base 10) value for visiblePage " + pageVal);
+          this.mxvf.error("Non-integer (base 10) value for visiblePage " + pageVal);
         } else if (n < 0) {
-          MXVF.error("visiblePage appears less than zero: " + pageVal + ". Setting visiblePage to 1");
-          visiblePage = 1;
+          this.mxvf.error("visiblePage appears less than zero: " + pageVal + ". Setting visiblePage to 1");
+          this.visiblePage = 1;
         } else {
           console.log('Set visible page to ' + n);
-          visiblePage = n;
+          this.visiblePage = n;
         }
       },
       setFirstPage : function(pageNumber) {
-        firstPage = parseInt(pageNumber,10);
-        console.log('The first page number will be ' + firstPage);
+        this.firstPage = parseInt(pageNumber,10);
+        console.log('The first page number will be ' + this.firstPage);
       },
       isCurrentPageVisible: function() {
 //        console.log('page visible comparing visible, current ' + visiblePage + ',' + currentPage);
-        return  visiblePage != -1 && 
-               (visiblePage === 0 || currentPage === visiblePage);
+        return  this.visiblePage != -1 && 
+               (this.visiblePage === 0 || this.currentPage === this.visiblePage);
       },
       isPageVisible: function(pageNumber) {
 //        console.log('page visible comparing visible, pageNumber ' + visiblePage + ',' + pageNumber);
-        return  visiblePage == 0 || 
-                (visiblePage != -1 && parseInt(pageNumber,10) === visiblePage);
+        return  this.visiblePage == 0 || 
+                (this.visiblePage != -1 && parseInt(pageNumber,10) === this.visiblePage);
       },
       nextPage : function(maybe) {
         var newPage = (maybe==="yes" || maybe==="maybe");
         if (newPage) {
-          if (isFirstPage) {
-            currentPage = firstPage;
-            isFirstPage = false;
+          if (this.isFirstPage) {
+            this.currentPage = this.firstPage;
+            this.isFirstPage = false;
             if (maybe==="yes") {
               console.log("MXVF surprised to see new-page='yes' for first page");
             }
           } else {
-            currentPage++;  
+            this.currentPage++;  
             if (maybe==="maybe") {
               console.log("MXVF surprised not to see new-page='yes' after first page");
             }
           }
 //          console.log('Current page: ', currentPage);
         } else {
-          if (isFirstPage) {
-            MXVF.error("MXVF amazed to see new-system='yes' before page is initialized");
-            visiblePage = -1;
+          if (this.isFirstPage) {
+            this.mxvf.error("MXVF amazed to see new-system='yes' before page is initialized");
+            this.visiblePage = -1;
           }
         }
         return newPage;
       }
-   };})();
+   });
 

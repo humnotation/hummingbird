@@ -1,3 +1,4 @@
+
 // MXVF.measure
 // writeMeasure(index, measure) - called from an "each" loop
 // Process the measure info:
@@ -7,20 +8,25 @@
 // If it is on the visible page, render it
 // The measurePrint class will know whether to change the visiblePage
 
-MXVF.measure = {
+MXVF.measure = function(mxvf)
+{
+  this.mxvf = mxvf;
+};
+
+_.extend(MXVF.measure.prototype, {
   
   doPrintElement: function($print) {
       if ($print.length > 0) {
           console.log('PRINT element', $print);
 
           // MXVF.measurePrint is about paging, layout, vertical staff positions
-          MXVF.measurePrint.init($print);
+          this.mxvf.measurePrint.init($print);
 
           // MXVF.page is about page-turning and page display logic
           // if new page deal with credits
           // In the sample data the 'Maybe' case does imply a new page
-          if (MXVF.page.nextPage(MXVF.measurePrint.isNewPageMaybe())) {
-              MXVF.writeMusic.startNewPage();
+          if (this.mxvf.page.nextPage(this.mxvf.measurePrint.isNewPageMaybe())) {
+              this.mxvf.writeMusic.startNewPage();
           }
       }
   },
@@ -31,7 +37,7 @@ MXVF.measure = {
     // Currently I see some attributes with staff print info that can be ignored
     if ($attributes.length > 0) {
       console.log('set attributes', $attributes);
-      MXVF.measureAttributes.init($attributes);
+      this.mxvf.measureAttributes.init($attributes);
     }
   },
 
@@ -40,11 +46,11 @@ MXVF.measure = {
     var bigFunLoop = true;  
     if (bigFunLoop) {
           // The whole big fun loop!
-         $measures.each(MXVF.measure.writeMeasure);
+         $measures.each(_.bind(this.writeMeasure, this));
     } else {
           // for development, just do a couple of measures
          for (var k=0; k < 12; k++) {
-            MXVF.measure.writeMeasure(k,$measures[k]);
+            this.writeMeasure(k,$measures[k]);
          }
      }
   },
@@ -63,34 +69,35 @@ MXVF.measure = {
         
 //    console.log('measure, width: ', $measure, measureWidth);
     
-    MXVF.measure.doPrintElement($print);            // vertical positioning: pages and staves
+    this.doPrintElement($print);            // vertical positioning: pages and staves
 
-    MXVF.measure.doAttributesElement($attributes);  // staves time signature, clefs, key signature
+    this.doAttributesElement($attributes);  // staves time signature, clefs, key signature
     
     // ignore: measure <direction placement="above"> <direction-type><words></></> <staff>1</> <sound tempo="120></></direction>
     
-    if (MXVF.page.isCurrentPageVisible()) {
+    if (this.mxvf.page.isCurrentPageVisible()) {
     
-        var addClefs = MXVF.measurePrint.isFirstOfSystem(),
-            addKeySig = MXVF.measurePrint.isFirstOfSystem(),
-            addTimeSig = MXVF.measurePrint.isFirstOfRhythm();
+        var addClefs = this.mxvf.measurePrint.isFirstOfSystem(),
+            addKeySig = this.mxvf.measurePrint.isFirstOfSystem(),
+            addTimeSig = this.mxvf.measurePrint.isFirstOfRhythm();
             
         // hack: adjust the measure width wider, it seems a little short
         measureWidth += 0;
         
-        MXVF.staves.makeStaves(measureNumber, measureWidth, addClefs, addKeySig, addTimeSig);        // new VexFlow.stave
+        this.mxvf.staves.makeStaves(measureNumber, measureWidth, addClefs, addKeySig, addTimeSig);        // new VexFlow.stave
 
-        MXVF.measureAttributes.decorateStaves(addClefs, addKeySig, addTimeSig);
+        this.mxvf.measureAttributes.decorateStaves(addClefs, addKeySig, addTimeSig);
 
-        MXVF.staves.drawStaves();      // draw staves
-        MXVF.note.addNotes($notes);    // draw measure's notes        
+        this.mxvf.staves.drawStaves();      // draw staves
+        this.mxvf.notes.addNotes($notes);    // draw measure's notes        
         
-        MXVF.note.clearMeasure();
+        this.mxvf.notes.clearMeasure();
         
-        MXVF.measurePrint.staffStepper.newMeasure(measureWidth);   // advance the stepper to next stave on this row
+        this.mxvf.measurePrint.staffStepper.newMeasure(measureWidth);   // advance the stepper to next stave on this row
     
     }
   
   }
-}
+
+});
 

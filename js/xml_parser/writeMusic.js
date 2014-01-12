@@ -4,25 +4,28 @@
 // Process the musicXML data near the document root
 //
 
-MXVF.writeMusic = {
+MXVF.writeMusic = function(mxvf) {
+    this.mxvf = mxvf;
+};
 
+_.extend(MXVF.writeMusic.prototype, {
     doDisplay : function($topNode) {
       
         // Read the page info
-        MXVF.scaling.init($topNode);
+        this.mxvf.scaling.init($topNode);
          
         // Read the credits from the file
-        MXVF.credits.init($topNode.find('credit'));
+        this.mxvf.credits.init($topNode.find('credit'));
       
         // We think that the first page number should be the earliest page
         // number that appears as the page number on a Credit.  In some files
         // there is no page number so this should give 1 as the answer. So far
         // it is always page 1 to start with in the file.
-        MXVF.page.setFirstPage(MXVF.credits.findFirstPageNumber());
+        this.mxvf.page.setFirstPage(this.mxvf.credits.findFirstPageNumber());
       
         // Loop on array of all the Measures data
         var $measures = $topNode.find('part').first().find('measure');
-        MXVF.measure.writeMeasures($measures);
+        this.mxvf.measure.writeMeasures($measures);
     },
     
     // This is called from measurePrint,
@@ -32,9 +35,9 @@ MXVF.writeMusic = {
     //   page being visible, and then the music was erased,
     //     but the credits were still there.
     startNewPage : function() {
-        if (MXVF.page.isCurrentPageVisible()) {
-           MXVF.scaling.clearCanvas();
-           MXVF.credits.renderCredits();
+        if (this.mxvf.page.isCurrentPageVisible()) {
+           this.mxvf.scaling.clearCanvas();
+           this.mxvf.credits.renderCredits();
         }
     }
-};
+});

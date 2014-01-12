@@ -24,7 +24,7 @@ requirejs.config(
         // XML Parser
         MXVFcore: {
             exports: "MXVF",
-            deps: ["vexflow"]
+            deps: ["lodash", "vexflow"]
         },
         MXVFcanvas: {
             deps: ["MXVFcore"]

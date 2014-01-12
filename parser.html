@@ -8,6 +8,7 @@
 
 
   <!-- Useful Javascript -->
+  <script src="js/libs/lodash/dist/lodash.js"></script>
   <script src="js/libs/jquery/jquery.min.js"></script>
   <script src="js/libs/raphael.js"></script>
   <script src="js/libs/bootstrap.min.js"></script>
@@ -78,13 +79,13 @@
 
 
 <script>
-
+  var mxvf = new MXVF();
   $(document).ready(function() {
-      MXVF.canvas.init($("#canvas")[0]);
+      mxvf.canvas.init($("#canvas")[0]);
 
       // This is now only being done to set the visible page
       // But that can also be removed if we have multiple pages render
-      MXVF.setInputParams();             
+      mxvf.setInputParams();             
 
   });
 
@@ -142,7 +143,7 @@
       progress.style.width = '100%';
       progress.textContent = '100%';
       setTimeout("document.getElementById('progress_bar').className='';", 2000);
-      MXVF.readMusic(e.target.result);
+      mxvf.readMusic(e.target.result);
     }
 
     // Read in the image file as a binary string.

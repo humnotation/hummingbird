@@ -5,211 +5,58 @@
 //  .clearMeasure() - clear the data to proceed to the next measure
 //
 
-MXVF.note = (function (staves) {
-    
-    // The (function (...) { .... })(); is an anonymous closure executed immediately.
-    // This uses a Module pattern in Javascript.
-    // Private variables and methods are declared as "var".
-    // It returns a key-value list of exported methods which become part of MXVF.note.
+MXVF.notes = function(mxvf)
+{
+  this.mxvf = mxvf;
+  this.voices = {};
+};
+
+_.extend(MXVF.notes.prototype, {
 
     // voices object contains chords which contain notes
 
-/* Rules on Voices, Chords, and Notes:    
-            // Notes with the same XML voice number are grouped into a voice
-            // A voice has independent timing of other voices in the measure
-            // Notes in a voice played at the same time are grouped into a chord.
-            
-            
-            // There's a log message if the voice goes to a different staff, 
-            // but otherwise it's processed the same.
-            
-            // A chord can have a single note that is a rest.
-            // The XML data and the VexFlow StaveNote assume a chord has notes
-            // of the same duration, on the same staff - if the data varies from
-            // that assumption, there could be some weirdness - an error message is displayed.
-            
-            // A rest can not be in a chord with any other notes.
-*/
-    
-// Todo: refactor into smaller cleaner bites of code
+  /* Rules on Voices, Chords, and Notes:    
+              // Notes with the same XML voice number are grouped into a voice
+              // A voice has independent timing of other voices in the measure
+              // Notes in a voice played at the same time are grouped into a chord.
+              
+              
+              // There's a log message if the voice goes to a different staff, 
+              // but otherwise it's processed the same.
+              
+              // A chord can have a single note that is a rest.
+              // The XML data and the VexFlow StaveNote assume a chord has notes
+              // of the same duration, on the same staff - if the data varies from
+              // that assumption, there could be some weirdness - an error message is displayed.
+              
+              // A rest can not be in a chord with any other notes.
+  */
+      
+  // Todo: refactor into smaller cleaner bites of code
 
-    
-    var voices = {},
-        clearMeasure = function () {
-            voices = {};
+        clearMeasure: function () {
+            this.voices = {};
             //console.log("note: clearMeasure");
         },
+
         // addNotes: call this with the children of a <measure>
-        addNotes = function ($notes) {
+        addNotes: function ($notes) {
             for (var k in $notes) {
                 if ($notes[k].nodeName === "note") {
-                    assimilateNote(getNoteData($notes[k]));
+                    this.assimilateNote(new MXVF.note($notes[k], this.mxvf));
                 } else if ($notes[k].nodeName === "backup") {
                     // draw the notes
                     // clear the notes
                     // because it's about to re-use a voice number
                     // todo: check if the backup duration equals the measure duration
-                    backup();
+                    this.backup();
                 }
                 // 'direction' not implemented here
             };
-            render();
+            this.render();
         },
-        // interpret note type as vexflow duration symbol
-        // the musicxml duration should be computable from the divisions, note type, and dots I think
-        vexDurationSymbol = (function() {
-           var sym = {
-                   "whole":"w",   // brevis (2w), longa (4w) are in musicxml but not vexflow. they're antique
-                   "half":"h",
-                   "quarter":"q",
-                   "eighth":"8",
-                   "16th":"16",
-                   "32nd":"32",
-                   "64th":"64",
-                   "128th":"128",
-                   "256th":"256"
-               },
-               getSymbol = function (noteType) {
-                    return ( sym[noteType] ? sym[noteType] : 
-                               ( console.log("note: unsupported xml note type " + noteType) ,
-                                 "8" )
-                           );
-               };
-           return getSymbol;
-        })(),
-        vexRestKey = {
-           // remember where the rests are normally put
-           // rest & staff -> key and octave
-           "1" : "b/4",
-           "2" : "d/3"
-        },
-        noteShapeTable = {
-           // Proof of Concept for Shape Notes
-           // todo: make symbols and glyphs for HummingBird
-           "A" : "T1",
-           "B" : "X0",
-           "C" : "X3",
-           "D" : "T3",
-           "E" : "D0",
-           "F" : "D2",
-           "G" : "X2"
-        },
-        //
-        // functions to give to note objects, thus saving memory
-        // to become a better javascript OO programmer, use .prototype to add methods
-        // to all objects with the same constructor.  This requires understanding javascript
-        //  constructors slightly better!
-        //
-        // getRestKey
-        // getNoteKey  : one of these two will be assigned as note.getVexKey
-        //
-        getRest = function () {
-            return (this.isRest ? 
-                    new Vex.Flow.StaveNote({ keys: this.getRestKey(), duration: this.getVexDuration() + 'r'}) : 
-                    null);
-        },
-        getRestKey = function () {
-            return vexRestKey[this.staff];
-        }
-        getNoteKey = function () { 
-            return this.getVexPitch() + '/' + this.octave + '/' + noteShapeTable[this.step];
-        },
-        getVexPitch = function () {
-            return this.step.toLowerCase() + this.accidental;
-        },
-        getVexDuration = function ()  {
-            // First the duration symbol like w, h, q, 8, 16 etc
-            // then d or dd or ddd etc for the dots
-            // then 'r' if it is a rest
-            return vexDurationSymbol(this.type) + 
-                     "dddddddd".substring(0,this.dots) +
-                     (this.isRest ? (this.staff == 1 ? "r" : "r") : "");
-        },
-        getDebugString = function () {
-            return 'key: ' + this.getVexKey() + 
-                   ', pitch: ' + this.getVexPitch() +
-                   ', duration: ' + this.getVexDuration();
-        },
-        //
-        // getNoteData: read data values from XML for a note
-        //
-        getNoteData = function (note) {
-        
-            // in the var are the multi-step operations, and then
-            // in the return are the additional final steps required
-            
-            // A more efficient traversal of the xml data would be nice - it would run faster at least,
-            // and the access to the data could be less particular.  An good approach could be to
-            // assign handlers to different types of XML node - that would be good for a future version.
-            
-            var $note = jQuery(note),
-                isRest = (0 < $note.children('rest').length),
-                isChord = (0 < $note.children('chord').length),
-                
-                isAlter = (0 < $note.children('pitch').length ?
-                               0 < $note.children('pitch').children('alter').length : 
-                                   false),
-                                   
-                notations = $note.children('notations'),
-                
-                isStaccato = (0 < notations.length > 0 && notations.children('articulations').length &&
-                              0 < notations.children('articulations').children('staccato').length),
 
-                alterNote = (isAlter ? parseInt($note.children('pitch').children('alter').first().text()) : 0),
-                
-                accidental = (isAlter ? ["bb","b","n","#","##"][2 + alterNote] : "");
-                
-            return {
-                isRest   : isRest,
-                isChord  : isChord,
-                isIgnore : ($note.attr('print-object') === "no"),
-                isAlter  : isAlter,
-                isStaccato : isStaccato,       // this kind of thing could be factored out to make the code nicer
-                accidental : accidental,
-                tie      : MXVF.ties.makeTies($note),
-                
-                dots     : $note.children('dot').length,
-                xpos     : $note.attr('default-x'),
-                ypos     : $note.attr('default-y'),
-                step     : $note.children('pitch').children('step').text(),
-                octave   : $note.children('pitch').children('octave').text(),              
-                duration : $note.children('duration').text(),
-                voice    : $note.children('voice').text(),
-                type     : $note.children('type').text(),
-                staff    : $note.children('staff').text(),
-                debug    : ($note.children('debug').length>0),
-                
-                // the staccato object may have some attributes - above/below
-                staccato : (isStaccato ? 
-                            notations.children('articulations').children('staccato').first() : null),
-                
-                getRest : getRest,
-                getDebugString   : getDebugString,
-                
-                getVexKey : (isRest? getRestKey : getNoteKey),
-                getVexPitch : getVexPitch,
-                getVexDuration : getVexDuration,
-            };
-        },
-        getVoice = function (note) {
-            
-            // getVoice( note) : If there is no matching voice, create one.
-            if ( ! voices[note.voice] ) {
-                voices[note.voice] = {
-                    staff: note.staff,
-                    chords: []
-                };
-            }
-            // Return existing voice which appears to match the note.
-            // The note has not been added to the voice yet.
-            if (note.staff === voices[note.voice].staff) {
-                return voices[note.voice];
-            } else {
-                console.log("note: notes from the same voice have different staves");
-                return voices[note.voice];
-            }
-        },
-        assimilateNote = function (note) {
+        assimilateNote: function (note) {
         
            // Add the note into the structure of Voices and Chords, based on
            // the <chord/> tag and <voice>1</voice> or <voice>5</voice> in the XML
@@ -222,7 +69,7 @@ MXVF.note = (function (staves) {
            
            if (note.isIgnore === false) {
 
-              var voice = getVoice(note);  
+              var voice = this.getVoice(note);  
            
               // "isChord" means the XML wants this note to be drawn in a chord with the previous note
               // To group the notes in a VexFlow chord could be essential to getting the measure-timing right
@@ -237,7 +84,7 @@ MXVF.note = (function (staves) {
                           //             note.getNoteString(), note.voice, voice.chords.length, voice.chords[voice.chords.length-1].length);
                       }
                   } else {
-                      MXVF.error("note: Unexpected condition: note.isChord is true but the voice has no chords.", note, voice);
+                      this.mxvf.error("note: Unexpected condition: note.isChord is true but the voice has no chords.", note, voice);
                       voice.chords.push([note]);          // this chord is broken, start a new chord with this note
                       //console.log("note: added note to voice in new chord: " + note.getNoteString(), note.voice, voice.chords.length);
                   }
@@ -247,7 +94,7 @@ MXVF.note = (function (staves) {
               }
            }
         },
-        isNoteFitChord = function(note, voice) {
+        isNoteFitChord: function(note, voice) {
             // Here is some research going on.  Notes from the same chord
             // have to have the same voice and staff.  Whether this requires
             // the notes to be of the same duration just depends on what
@@ -260,13 +107,13 @@ MXVF.note = (function (staves) {
                        note1.voice    === note.voice);
                        // && note1.duration === note.duration  // I think this didn't change much  when I tried it
             if (ret === false) {
-                MXVF.error("note: These incompatible notes are trying to fit in the same chord in this voice: " ,note1, note, voice);
+                this.mxvf.error("note: These incompatible notes are trying to fit in the same chord in this voice: " ,note1, note, voice);
             }
             return ret;
         },
         
         // render: use VexFlow to put the chords onto the canvas
-        render = function () {
+        render: function () {
             var vindex, 
                 voice,     // a set of notes & chords with its own timing, independent of other voices
                 noteArray, // collector for constructed VexFlow notes
@@ -285,8 +132,8 @@ MXVF.note = (function (staves) {
                 keystring;    // string to compare the VexFlow KeyProps annoyation 
                 
             
-            for (vindex in voices) {
-                voice = voices[vindex];
+            for (vindex in this.voices) {
+                voice = this.voices[vindex];
                 noteArray = [];
                 for (cindex in voice.chords) {
                     
@@ -348,11 +195,11 @@ MXVF.note = (function (staves) {
                             }
                             // If the note is the end of a tie, figure out which note it is tied to
                             if (note.tie.isStop) {
-                                MXVF.ties.matchTies(note, nindex, vexNote);
+                                this.mxvf.ties.matchTies(note, nindex, vexNote);
                             }
                             // If the note is the start of a tie, remember it so it can be matched with its end
                             if (note.tie.isStart) {
-                                MXVF.ties.rememberTie(note, nindex, vexNote);
+                                this.mxvf.ties.rememberTie(note, nindex, vexNote);
                             }
                         }
                     }
@@ -362,25 +209,180 @@ MXVF.note = (function (staves) {
                 }
                 
                 // Draw the chord onto the staves
-                stave = MXVF.staves.getStave(voice.staff);
-                Vex.Flow.Formatter.FormatAndDraw(MXVF.canvas.getContext(), stave, noteArray);
+                stave = this.mxvf.staves.getStave(voice.staff);
+                Vex.Flow.Formatter.FormatAndDraw(this.mxvf.canvas.getContext(), stave, noteArray);
                 
                 // Draw all the matched ties
-                MXVF.ties.renderTieMatches();
+                this.mxvf.ties.renderTieMatches();
             }
         },
-        backup = function() {
-            render();
-            clearMeasure();
+        backup: function() {
+            this.render();
+            this.clearMeasure();
+        },
+
+        getVoice: function (note) {
+            
+            // getVoice( note) : If there is no matching voice, create one.
+            if ( ! this.voices[note.voice] ) {
+                this.voices[note.voice] = {
+                    staff: note.staff,
+                    chords: []
+                };
+            }
+            // Return existing voice which appears to match the note.
+            // The note has not been added to the voice yet.
+            if (note.staff === this.voices[note.voice].staff) {
+                return this.voices[note.voice];
+            } else {
+                console.log("note: notes from the same voice have different staves");
+                return this.voices[note.voice];
+            }
         }
-    
-    // That was a very long var statement, and now it has ended.
-    // return: export the following properties from this closure/module/OO thing into MXVF.note
 
-    return {
-        addNotes: addNotes,
-        clearMeasure: clearMeasure,
-    };
+      });
 
-})(MXVF.staves.getStaves());
+MXVF.note = function(note, mxvf)
+{
 
+  this.mxvf = mxvf;
+      
+            // in the var are the multi-step operations, and then
+            // in the return are the additional final steps required
+            
+            // A more efficient traversal of the xml data would be nice - it would run faster at least,
+            // and the access to the data could be less particular.  An good approach could be to
+            // assign handlers to different types of XML node - that would be good for a future version.
+            
+            var $note = jQuery(note),
+                isRest = (0 < $note.children('rest').length),
+                isChord = (0 < $note.children('chord').length),
+                
+                isAlter = (0 < $note.children('pitch').length ?
+                               0 < $note.children('pitch').children('alter').length : 
+                                   false),
+                                   
+                notations = $note.children('notations'),
+                
+                isStaccato = (0 < notations.length > 0 && notations.children('articulations').length &&
+                              0 < notations.children('articulations').children('staccato').length),
+
+                alterNote = (isAlter ? parseInt($note.children('pitch').children('alter').first().text()) : 0),
+                
+                accidental = (isAlter ? ["bb","b","n","#","##"][2 + alterNote] : "");
+                
+            _.extend(this, {
+                isRest   : isRest,
+                isChord  : isChord,
+                isIgnore : ($note.attr('print-object') === "no"),
+                isAlter  : isAlter,
+                isStaccato : isStaccato,       // this kind of thing could be factored out to make the code nicer
+                accidental : accidental,
+                tie      : this.mxvf.ties.makeTies($note),
+                
+                dots     : $note.children('dot').length,
+                xpos     : $note.attr('default-x'),
+                ypos     : $note.attr('default-y'),
+                step     : $note.children('pitch').children('step').text(),
+                octave   : $note.children('pitch').children('octave').text(),              
+                duration : $note.children('duration').text(),
+                voice    : $note.children('voice').text(),
+                type     : $note.children('type').text(),
+                staff    : $note.children('staff').text(),
+                debug    : ($note.children('debug').length>0),
+                
+                // the staccato object may have some attributes - above/below
+                staccato : (isStaccato ? 
+                            notations.children('articulations').children('staccato').first() : null)
+               
+            });
+};
+
+_.extend(MXVF.note.prototype, {
+
+        sym: {
+                   "whole":"w",   // brevis (2w), longa (4w) are in musicxml but not vexflow. they're antique
+                   "half":"h",
+                   "quarter":"q",
+                   "eighth":"8",
+                   "16th":"16",
+                   "32nd":"32",
+                   "64th":"64",
+                   "128th":"128",
+                   "256th":"256"
+        },
+
+        // interpret note type as vexflow duration symbol
+        // the musicxml duration should be computable from the divisions, note type, and dots I think
+        vexDurationSymbol: function (noteType) {
+                    return ( this.sym[noteType] ? this.sym[noteType] : 
+                               ( console.log("note: unsupported xml note type " + noteType) ,
+                                 "8" )
+                           );
+               },
+
+        vexRestKey: {
+           // remember where the rests are normally put
+           // rest & staff -> key and octave
+           "1" : "b/4",
+           "2" : "d/3"
+        },
+
+        noteShapeTable: {
+           // Proof of Concept for Shape Notes
+           // todo: make symbols and glyphs for HummingBird
+           "A" : "T1",
+           "B" : "X0",
+           "C" : "X3",
+           "D" : "T3",
+           "E" : "D0",
+           "F" : "D2",
+           "G" : "X2"
+        },
+
+        //
+        // functions to give to note objects, thus saving memory
+        // to become a better javascript OO programmer, use .prototype to add methods
+        // to all objects with the same constructor.  This requires understanding javascript
+        //  constructors slightly better!
+        //
+        // getRestKey
+        // getNoteKey  : one of these two will be assigned as note.getVexKey
+        //
+        getRest: function () {
+            return (this.isRest ? 
+                    new Vex.Flow.StaveNote({ keys: this.getRestKey(), duration: this.getVexDuration() + 'r'}) : 
+                    null);
+        },
+
+        getVexKey: function()
+        {
+          return this.isRest ? this.getRestKey() : this.getNoteKey();
+        },
+
+        getRestKey: function () {
+            return this.vexRestKey[this.staff];
+        },
+        
+        getNoteKey: function () { 
+            return this.getVexPitch() + '/' + this.octave + '/' + this.noteShapeTable[this.step];
+        },
+        getVexPitch: function () {
+            return this.step.toLowerCase() + this.accidental;
+        },
+        getVexDuration: function ()  {
+            // First the duration symbol like w, h, q, 8, 16 etc
+            // then d or dd or ddd etc for the dots
+            // then 'r' if it is a rest
+            return this.vexDurationSymbol(this.type) + 
+                     "dddddddd".substring(0,this.dots) +
+                     (this.isRest ? (this.staff == 1 ? "r" : "r") : "");
+        },
+        getDebugString: function () {
+            return 'key: ' + this.getVexKey() + 
+                   ', pitch: ' + this.getVexPitch() +
+                   ', duration: ' + this.getVexDuration();
+        }
+
+         
+});

@@ -1,5 +1,10 @@
 
-MXVF.scaling = {
+MXVF.scaling = function(mxvf)
+{
+  this.mxvf = mxvf;
+};
+
+_.extend(MXVF.scaling.prototype, {
   
   // init: initialize the values of MXVF.scaling (or create a new object with new operator)
   init: function($xml) {
@@ -54,11 +59,11 @@ MXVF.scaling = {
   }, 
 
   getHeight: function() {
-    return this.height || MXVF.error('Canvas scaling not initialized');
+    return this.height || this.mxvf.error('Canvas scaling not initialized');
   },
 
   getWidth: function() {
-    return this.width || MXVF.error('Canvas scaling not initialized');
+    return this.width || this.mxvf.error('Canvas scaling not initialized');
   },
   // Coordinate conversions
   //     horizontal (x) is easy because both are computed from the left edge
@@ -86,12 +91,12 @@ MXVF.scaling = {
   countClearings: 0,
   clearCanvas: function() {
     if (!this.clear) {
-      MXVF.canvas.setPxDimensions(this.width+5, this.height+5);
-      MXVF.canvas.setPxDimensions(this.width, this.height);
+      this.mxvf.canvas.setPxDimensions(this.width+5, this.height+5);
+      this.mxvf.canvas.setPxDimensions(this.width, this.height);
       console.log("cleared now " + (++this.countClearings) + " time(s)");
     }
   }
 
-}
+});
 
 
