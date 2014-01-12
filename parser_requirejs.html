@@ -6,33 +6,8 @@
 
   <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css" media="screen">
 
-
-  <!-- Useful Javascript -->
-  <script src="js/libs/jquery/jquery.min.js"></script>
-  <script src="js/libs/raphael.js"></script>
-  <script src="js/libs/bootstrap.min.js"></script>
-
-  <!-- VexFlow Compiled Source -->
-  <script src="js/libs/vexflow-free.js"></script>
-
-  <!-- MusicXML to Vexflow: Parser -->
-  <script src="js/xml_parser/MXVF.js"></script>
-  <script src="js/xml_parser/inputParams.js"></script>
-  <script src="js/xml_parser/page.js"></script>
-  <script src="js/xml_parser/readMusic.js"></script>
-  <script src="js/xml_parser/writeMusic.js"></script>
-  <script src="js/xml_parser/scaling.js"></script>
-  <script src="js/xml_parser/measurePrint.js"></script>
-  <script src="js/xml_parser/staffStepper.js"></script>
-  <script src="js/xml_parser/measureAttributes.js"></script>
-  <script src="js/xml_parser/measure.js"></script>
-  <script src="js/xml_parser/canvas.js"></script>
-  <script src="js/xml_parser/credits.js"></script>
-  <script src="js/xml_parser/staves.js"></script>
-  <script src="js/xml_parser/note.js"></script>
-  <script src="js/xml_parser/ties.js"></script>
-
-
+  <script src="../js/libs/requirejs/require.js"></script>
+  <script src="../js/requireJsConfig.js"></script>
 
 <style>
   #progress_bar {
@@ -79,7 +54,22 @@
 
 <script>
 
+requirejs(
+[
+  "bootstrap",
+  "jquery",
+  "MXVF"
+],
+function(
+  bootstrap,
+  $,
+  MXVF
+)
+{
+
+
   $(document).ready(function() {
+      console.log("Ready");
       MXVF.canvas.init($("#canvas")[0]);
 
       // This is now only being done to set the visible page
@@ -150,6 +140,8 @@
   }
 
   document.getElementById('files').addEventListener('change', handleFileSelect, false);
+
+});
 </script>
 
 

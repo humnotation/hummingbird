@@ -2,26 +2,52 @@ requirejs.config(
 {
     baseUrl: "js",
     paths: {
-        lodash: "../lib/lodash/dist/lodash",
-        jquery: "../lib/jquery/jquery",
-        vexflow: "../lib/vexflow/vexflow-min",
-        chai: "../lib/chai/chai",
-        mocha: "../lib/mocha/mocha",
-        requirejs: "../lib/requirejs/require",
-        text: "../lib/requirejs-text/text",
-        sinon: "../lib/sinon/index",
-        "sinon-chai": "../lib/sinon-chai/index",
-        resources: "../resources"
+
+        // utils
+        requirejs: "libs/requirejs/require",
+        lodash: "libs/lodash/dist/lodash",
+        jquery: "libs/jquery/jquery",
+        bootstrap: "libs/bootstrap.min",
+
+        // testing
+        mocha: "libs/mocha/mocha",
+        chai: "libs/chai/chai",
+        sinon: "libs/sinon/index",
+        "sinon-chai": "libs/sinon-chai/index",
+        text: "libs/requirejs-text/text",
+        resources: "../resources",
+
+        // vexflow 
+        vexflow: "libs/vexflow-free",
+        raphael: "libs/raphael",
+
+        // MXVF packaged as amd module
+        MXVF: "xml_parser/requireJsShim"
+
     },
     shim: {
-        vexflow: {
-            exports: "Vex"
+
+        // utils
+        bootstrap: {
+            deps: ["jquery"]
         },
+
+        // testing
         mocha: {
             exports: "mocha"
         },
         sinon: {
             exports: "sinon"
+        },
+
+        // vexflow
+        vexflow: {
+            exports: "Vex",
+            deps: ["raphael"]
+        },
+
+        raphael: {
+            exports: "Raphael"
         }
     }
 });

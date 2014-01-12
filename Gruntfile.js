@@ -10,7 +10,7 @@ module.exports = function(grunt)
         {
             source:
             {
-                src: [ "js/**/*.js" ]
+                src: [ "js/**/*.js", "!js/libs/**/*.js" ]
             },
             build:
             {
