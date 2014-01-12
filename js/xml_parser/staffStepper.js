@@ -8,7 +8,6 @@ MXVF.staffStepper = function(mxvf)
 {
     this.mxvf = mxvf;
 
-    this.staffCount = this.mxvf.measurePrint.staffNumberOf;     // assume this is constant, or add another method to this.mxvf.measurePrint
     this.currentTop = NaN;                      // current staff position on page, or NaN if none
     this.rhythmState = 0;                       // 0 = first measure in set of attributes (so print the time signature), 1 = otherwise
     this.groupState = 0;                        // 0 = first staff of group of staves, 1 = otherwise
@@ -32,17 +31,18 @@ _.extend(MXVF.staffStepper.prototype, {
                 this.currentTop = this.mxvf.measurePrint.pageStaffTop();
                 this.groupState = 1;
             } else if (this.groupState === 0) {
-	            this.currentTop = this.mxvf.measurePrint.groupStaffTop(currentTop);
+	            this.currentTop = this.mxvf.measurePrint.groupStaffTop(this.currentTop);
 	            this.groupState = 1;
             } else {
-	            this.currentTop = this.mxvf.measurePrint.nextStaffTop(currentTop);
+	            this.currentTop = this.mxvf.measurePrint.nextStaffTop(this.currentTop);
             }
             return this.currentTop;
         },
 
         makeTops: function() {
             this.tops = [];
-            for (var k = 0; k < this.staffCount; ++k) {
+            var staffCount = this.mxvf.measurePrint.getStaffNumberOf();
+            for (var k = 0; k < staffCount; ++k) {
                 this.tops[k] = this.getNextTop();
             }
         },

@@ -61,7 +61,12 @@ _.extend(MXVF.measurePrint.prototype, {
     }
     
   },
-  
+ 
+  getStaffNumberOf: function()
+  {
+    return this.staffNumberOf
+  },
+
   isNewPageMaybe: function () {
       return (this.newPage ? "yes" : (this.newSystem ? "no" : "maybe"));    // Basically "maybe" works like "yes"
   },
