@@ -6,124 +6,97 @@
 // After the Credit objects are created they have to be stored
 // They are rendered when the page number matches
 
-MXVF.credit = function($creditXml, mxvf) {
+MusicXMLParser.credit = function($creditXml, renderer, parserPage) {
 
+    this.renderer = renderer;
+    this.parserPage = parserPage;
 
-  // This method is a constructor. If not, complain. 
-  // Todo: figure out what "Error" is
-  if ( !(this instanceof arguments.callee) ) 
-     throw new Error("Constructor called as a function");
+    if ($creditXml[0].nodeName == "credit") {
 
-  this.mxvf = mxvf;
+        var $creditWords = $($creditXml.children('credit-words'));
 
-  if ($creditXml[0].nodeName == "credit") {
+        this.page = parseInt($creditXml.attr('page'),10);    
+        this.creditWords = $creditWords.text();
+        this.justify = $creditWords.attr('justify');
+        this.valign = $creditWords.attr('valign');
+        this.defaultX = parseFloat($creditWords.attr('default-x'));
+        this.defaultY = parseFloat($creditWords.attr('default-y'));
+        this.fontSize = parseFloat($creditWords.attr('font-size'));
 
-    var $creditWords = jQuery($creditXml.children('credit-words'));
+        if (!isFinite(this.page)) {
+            this.page = 1;
+        }
 
-    this.page        = parseInt($creditXml.attr('page'),10);  
-    this.creditWords = $creditWords.text();
-    this.justify     = $creditWords.attr('justify');
-    this.valign      = $creditWords.attr('valign');
-    this.defaultX    = parseFloat($creditWords.attr('default-x'));
-    this.defaultY    = parseFloat($creditWords.attr('default-y'));
-    this.fontSize    = parseFloat($creditWords.attr('font-size'));
-
-    if (!isFinite(this.page)) {
-       this.page = 1;
-    }
-
-  } else {
-    console.log('credit text: ' + $creditXml.text());
-    console.log($creditXml);
-    this.mxvf.error('no credit node found');
-  };
+    } else {
+        console.log('credit text: ' + $creditXml.text());
+        console.log($creditXml);
+        throw new Error('no credit node found');
+    };
 
 };
 
-_.extend(MXVF.credit.prototype, {
+_.extend(MusicXMLParser.credit.prototype, {
 
-  toDebugString: function(){ 
-    return "page,dx,dy,fontsize,justify,creditowrds =" +
-           this.page + ", " + this.defaultX + ", " +
-           this.defaultY + ", " +this.fontSize+ ", " +this.justify+ ", " + this.creditWords; 
-  },
+    toDebugString: function(){ 
+        return "Credits: page,dx,dy,fontsize,justify,creditowrds =" +
+            this.page + ", " + this.defaultX + ", " +
+            this.defaultY + ", " +this.fontSize+ ", " +this.justify+ ", " + this.creditWords; 
+    },
 
-  render: function() {
-
-    console.log('Rendering',this.toDebugString());
-    if (this.mxvf.page.isPageVisible(this.page)) {
-
-      var ctx = this.mxvf.canvas.getContext();
-      ctx.font = "" + this.fontSize + "px Ariel";
-
-      var xpix = this.mxvf.scaling.x(this.defaultX);
-      var ypix = this.mxvf.scaling.y(this.defaultY);
-
-      if (this.justify==="left" || this.justify==="right" || this.justify==="center") {
-        ctx.textAlign = this.justify;
-      } else {
-        console.log('Unsupported credit.justify= ' + this.justify);
-      }
-
-      // can align for this.valign = top or this.valign = bottom
-      // see https://developer.mozilla.org/en-US/docs/Drawing_text_using_a_canvas
-      if (this.valign==="top" || this.valign==="bottom") {
-        ctx.textBaseline = this.valign;  // appears not to do anything
-      } else {
-        console.log('Unsupported credit.valign= ' + this.valign);
-      }
-
-      // Render the text
-      ctx.fillText(this.creditWords, xpix,ypix);
+    render: function() {
+        console.log(this.toDebugString());
+        if (this.parserPage.isPageVisible(this.page)) {
+            this.renderer.renderCredit(this);
+        }
     }
-    
-  }
+
 });
 
-MXVF.credits = function(mxvf)
+MusicXMLParser.credits = function(renderer, parserPage)
 {
-  this.creditData = [];
-  this.mxvf = mxvf;
+    this.renderer = renderer;
+    this.parserPage = parserPage;
+    this.creditData = [];
 };
 
-_.extend(MXVF.credits.prototype, {
+_.extend(MusicXMLParser.credits.prototype, {
 
-  init: function($creditsArray) {
-    var self = this;
-    jQuery.each($creditsArray, function(index, creditXml) {
-       console.log('index,creditXml',index,creditXml);
-       var credit = new MXVF.credit(jQuery(creditXml), self.mxvf);
-       console.log('made a credit! ' + credit.toDebugString());
-       self.creditData.push(credit);
-    });
-  },
+    init: function($creditsArray) {
+        var self = this;
+        $.each($creditsArray, function(index, creditXml) {
+            console.log('index,creditXml',index,creditXml);
+            var credit = new MusicXMLParser.credit($(creditXml), self.renderer, self.parserPage);
+            console.log('made a credit! ' + credit.toDebugString());
+            self.creditData.push(credit);
+        });
+    },
 
-  findFirstPageNumber : function() {
-    var firstPage = 1;
-    if (this.creditData.length > 0) {
-      var minPage = 999;
-      var maxPage = 1;
-      for (index in this.creditData) {
-        if (isFinite(this.creditData[index].page)) {
-          minPage=Math.min(firstPage, this.creditData[index].page);
-          maxPage=Math.max(firstPage, this.creditData[index].page);
+    findFirstPageNumber : function() {
+        var firstPage = 1;
+        if (this.creditData.length > 0) {
+            var minPage = 999;
+            var maxPage = 1;
+            for (index in this.creditData) {
+                if (isFinite(this.creditData[index].page)) {
+                    minPage=Math.min(firstPage, this.creditData[index].page);
+                    maxPage=Math.max(firstPage, this.creditData[index].page);
+                }
+            }
+            if (minPage <= maxPage) {
+                firstPage = minPage;
+            }
+        } else {
+            firstPage = 1;
         }
-      }
-      if (minPage <= maxPage) {
-        firstPage = minPage;
-      }
-    } else {
-      firstPage = 1;
-    }
-    return firstPage;
-  },
+        return firstPage;
+    },
 
-  renderCredits: function() {
-    _.each(this.creditData, function(credit)
-    {
-      credit.render();
-    });
-  }
+    renderCredits: function() {
+        _.each(this.creditData, function(credit)
+        {
+            credit.render();
+        });
+    }
 
 });
 

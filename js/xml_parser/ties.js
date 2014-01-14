@@ -1,6 +1,5 @@
-MXVF.ties = function(mxvf)
+MXVF.ties = function()
 {
-    this.mxvf = mxvf;
     this.starts = {};
     this.matches = [];
     this.tieId = 0;
@@ -195,7 +194,7 @@ _.extend(MXVF.ties.prototype, {
                         
                     } else {
                         // error, problem, danger
-                        this.mxvf.error("Tie: failed to match stop to any start. There are " + this.starts.length + " starts pending.");
+                        throw new Error("Tie: failed to match stop to any start. There are " + this.starts.length + " starts pending.");
                     }
                 }
             },

@@ -17,7 +17,7 @@
   <script src="js/libs/vexflow-free.js"></script>
 
   <!-- MusicXML to Vexflow: Parser -->
-  <script src="js/xml_parser/MXVF.js"></script>
+  <script src="js/xml_parser/musicXMLParser.js"></script>
   <script src="js/xml_parser/inputParams.js"></script>
   <script src="js/xml_parser/page.js"></script>
   <script src="js/xml_parser/readMusic.js"></script>
@@ -79,14 +79,11 @@
 
 
 <script>
-  var mxvf = new MXVF();
+  var mxvf = new MusicXMLParser({
+    renderer: {}
+  });
   $(document).ready(function() {
       mxvf.canvas.init($("#canvas")[0]);
-
-      // This is now only being done to set the visible page
-      // But that can also be removed if we have multiple pages render
-      mxvf.setInputParams();             
-      mxvf.page.setVisiblePage(1);
   });
 
   var reader;

@@ -18,11 +18,9 @@
 // the functional expression returns an object with methods in it, which access
 // the private variables visiblePage, currentPage, etc
 
-MXVF.page = function(mxvf)
+MXVF.page = function()
 {
-  this.mxvf = mxvf;
-
-  this.visiblePage = -1;    // comes from parameter. 0 means all, -1 means none yet
+  this.visiblePage = 0;    // comes from parameter. 0 means all, -1 means none yet
   this.currentPage = 0;     // this is updated as the input file is proces
   this.firstPage = 1;       // assume 1 but it should be in the Credits but there might not be Credits
   this.isFirstPage = true;  // waiting for first page
@@ -33,9 +31,9 @@ _.extend(MXVF.page.prototype, {
         console.log('setVisiblePage ' + pageVal);
         var n = parseInt(pageVal,10);
         if ( isNaN(n) || ( "" + pageVal ) !== ( "" + n ) ) {
-          this.mxvf.error("Non-integer (base 10) value for visiblePage " + pageVal);
+          throw new Error("Non-integer (base 10) value for visiblePage " + pageVal);
         } else if (n < 0) {
-          this.mxvf.error("visiblePage appears less than zero: " + pageVal + ". Setting visiblePage to 1");
+          throw new Error("visiblePage appears less than zero: " + pageVal + ". Setting visiblePage to 1");
           this.visiblePage = 1;
         } else {
           console.log('Set visible page to ' + n);
@@ -74,7 +72,7 @@ _.extend(MXVF.page.prototype, {
 //          console.log('Current page: ', currentPage);
         } else {
           if (this.isFirstPage) {
-            this.mxvf.error("MXVF amazed to see new-system='yes' before page is initialized");
+            throw new Error("MXVF amazed to see new-system='yes' before page is initialized");
             this.visiblePage = -1;
           }
         }

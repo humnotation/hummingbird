@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
-  <title>Humming Bird</title>
+  <title>Humming Bird Notation</title>
 
   <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css" media="screen">
 
@@ -59,27 +59,27 @@ requirejs(
   "lodash",
   "bootstrap",
   "jquery",
-  "MXVF"
+  "MusicXMLParser",
+  "renderers/vexFlow/vexFlowRenderer"
 ],
 function(
   lodash,
   bootstrap,
   $,
-  MXVF
+  MusicXMLParser,
+  VexFlowRenderer
 )
 {
 
 
-  var mxvf = new MXVF();
+  var parser;
 
   $(document).ready(function() {
-      console.log("Ready");
-      //MXVF.canvas.init($("#canvas")[0]);
-
-      // This is now only being done to set the visible page
-      // But that can also be removed if we have multiple pages render
-      //mxvf.setInputParams();             
-
+    parser = new MusicXMLParser({
+      renderer: new VexFlowRenderer({
+        canvas: $("#canvas")[0]
+      })
+    });
   });
 
   var reader;
@@ -136,7 +136,7 @@ function(
       progress.style.width = '100%';
       progress.textContent = '100%';
       setTimeout("document.getElementById('progress_bar').className='';", 2000);
-      mxvf.readMusic(e.target.result);
+      parser.readMusic(e.target.result);
     }
 
     // Read in the image file as a binary string.

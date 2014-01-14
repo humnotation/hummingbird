@@ -4,20 +4,33 @@
     // move to a new page, new line (system of staves),
     // or to advance across one measure
     
-MXVF.staffStepper = function(mxvf)
+MXVF.staffStepper = function(options)
 {
-    this.mxvf = mxvf;
+
+    if(!options || !options.ties)
+    {
+        throw new Error("staffStepper requires ties");
+    }
+    this.ties = options.ties;
+    this.measurePrint = undefined;
 
     this.currentTop = NaN;                      // current staff position on page, or NaN if none
     this.rhythmState = 0;                       // 0 = first measure in set of attributes (so print the time signature), 1 = otherwise
     this.groupState = 0;                        // 0 = first staff of group of staves, 1 = otherwise
     this.systemState = 0;                       // 0 = first measure in stave system, 1 = otherwise
     this.tops       = [];                       // current group of staff positions
-    this.currentX   = this.mxvf.measurePrint.getLeftMargin();   // current horizontal place for measure
+    this.currentX   = this.measurePrint.getLeftMargin();   // current horizontal place for measure
 
 };
 
 _.extend(MXVF.staffStepper.prototype, {
+
+
+        setMeasurePrint: function(measurePrint)
+        {
+            this.measurePrint = measurePrint;
+            this.currentX = this.measurePrint.getLeftMargin();
+        }
 
         // Top: the vertical distance measured in pixels
         //      between the upper edge of a staff and the upper edge of the page
@@ -28,20 +41,20 @@ _.extend(MXVF.staffStepper.prototype, {
             // The methods being called return distances in vertical pixels
             
             if (isNaN(this.currentTop)) {
-                this.currentTop = this.mxvf.measurePrint.pageStaffTop();
+                this.currentTop = this.measurePrint.pageStaffTop();
                 this.groupState = 1;
             } else if (this.groupState === 0) {
-	            this.currentTop = this.mxvf.measurePrint.groupStaffTop(this.currentTop);
+	            this.currentTop = this.measurePrint.groupStaffTop(this.currentTop);
 	            this.groupState = 1;
             } else {
-	            this.currentTop = this.mxvf.measurePrint.nextStaffTop(this.currentTop);
+	            this.currentTop = this.measurePrint.nextStaffTop(this.currentTop);
             }
             return this.currentTop;
         },
 
         makeTops: function() {
             this.tops = [];
-            var staffCount = this.mxvf.measurePrint.getStaffNumberOf();
+            var staffCount = this.measurePrint.getStaffNumberOf();
             for (var k = 0; k < staffCount; ++k) {
                 this.tops[k] = this.getNextTop();
             }
@@ -61,9 +74,9 @@ _.extend(MXVF.staffStepper.prototype, {
             this.systemState = 0;
             this.groupState = 0;
             this.makeTops();
-            this.currentX = this.mxvf.measurePrint.getLeftMargin();
+            this.currentX = this.measurePrint.getLeftMargin();
             console.log("staffStepper: newGroup made tops: ", this.tops);
-            this.mxvf.ties.unjoin();  // join ties correctly across the staves equivalent of line breaks
+            this.ties.unjoin();  // join ties correctly across the staves equivalent of line breaks
         },
         // newPage: use this to start a new page
         newPage : function () {
@@ -71,9 +84,9 @@ _.extend(MXVF.staffStepper.prototype, {
             this.currentTop = NaN;
             this.groupState = 0;
             this.makeTops();
-            this.currentX = this.mxvf.measurePrint.getLeftMargin();
+            this.currentX = this.measurePrint.getLeftMargin();
             console.log("staffStepper: newPage made tops: ", this.tops);
-            this.mxvf.ties.unjoin(); // join ties correctly across page breaks
+            this.ties.unjoin(); // join ties correctly across page breaks
         },
         // newRhythm: use this when attributes are redone
         newRhythm : function () {

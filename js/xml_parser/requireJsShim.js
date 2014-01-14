@@ -2,93 +2,78 @@ requirejs.config(
 {
     paths: {
 
-        // MXVF with all parts shimmed for requirejs
-        MXVFcore: "xml_parser/MXVF",
-        MXVFcanvas: "xml_parser/canvas",
-        MXVFcredits: "xml_parser/credits",
-        MXVFinputParams: "xml_parser/inputParams",
-        MXVFmeasure: "xml_parser/measure",
-        MXVFmeasureAttributes: "xml_parser/measureAttributes",
-        MXVFmeasurePrint: "xml_parser/measurePrint",
-        MXVFnote: "xml_parser/note",
-        MXVFpage: "xml_parser/page",
-        MXVFreadMusic: "xml_parser/readMusic",
-        MXVFscaling: "xml_parser/scaling",
-        MXVFstaffStepper: "xml_parser/staffStepper",
-        MXVFstaves: "xml_parser/staves",
-        MXVFties: "xml_parser/ties",
-        MXVFwriteMusic: "xml_parser/writeMusic"
+        // MusicXMLParser with all parts shimmed for requirejs
+        MusicXMLParsercore: "xml_parser/musicXMLParser",
+        MusicXMLParsercredits: "xml_parser/credits",
+        MusicXMLParsermeasure: "xml_parser/measure",
+        MusicXMLParsermeasureAttributes: "xml_parser/measureAttributes",
+        MusicXMLParsermeasurePrint: "xml_parser/measurePrint",
+        MusicXMLParsernote: "xml_parser/note",
+        MusicXMLParserpage: "xml_parser/page",
+        MusicXMLParserreadMusic: "xml_parser/readMusic",
+        MusicXMLParserstaffStepper: "xml_parser/staffStepper",
+        MusicXMLParserstaves: "xml_parser/staves",
+        MusicXMLParserties: "xml_parser/ties",
+        MusicXMLParserwriteMusic: "xml_parser/writeMusic"
     },
     shim: {
 
         // XML Parser
-        MXVFcore: {
-            exports: "MXVF",
+        MusicXMLParsercore: {
+            exports: "MusicXMLParser",
             deps: ["lodash", "vexflow"]
         },
-        MXVFcanvas: {
-            deps: ["MXVFcore"]
+        MusicXMLParsercredits: {
+            deps: ["MusicXMLParsercore"]
         },
-        MXVFcredits: {
-            deps: ["MXVFcore"]
+        MusicXMLParsermeasure: {
+            deps: ["MusicXMLParsercore"]
         },
-        MXVFinputParams: {
-            deps: ["MXVFcore"]
+        MusicXMLParsermeasureAttributes: {
+            deps: ["MusicXMLParsercore"]
         },
-        MXVFmeasure: {
-            deps: ["MXVFcore"]
+        MusicXMLParsermeasurePrint: {
+            deps: ["MusicXMLParsercore"]
         },
-        MXVFmeasureAttributes: {
-            deps: ["MXVFcore"]
+        MusicXMLParsernote: {
+            deps: ["MusicXMLParsercore", "MusicXMLParserstaves"]
         },
-        MXVFmeasurePrint: {
-            deps: ["MXVFcore"]
+        MusicXMLParserpage: {
+            deps: ["MusicXMLParsercore"]
         },
-        MXVFnote: {
-            deps: ["MXVFcore", "MXVFstaves"]
+        MusicXMLParserreadMusic: {
+            deps: ["MusicXMLParsercore"]
         },
-        MXVFpage: {
-            deps: ["MXVFcore"]
+        MusicXMLParserstaffStepper: {
+            deps: ["MusicXMLParsercore"]
         },
-        MXVFreadMusic: {
-            deps: ["MXVFcore"]
+        MusicXMLParserstaves: {
+            deps: ["MusicXMLParsercore", "MusicXMLParserstaffStepper"]
         },
-        MXVFscaling: {
-            deps: ["MXVFcore"]
+        MusicXMLParserties: {
+            deps: ["MusicXMLParsercore"]
         },
-        MXVFstaffStepper: {
-            deps: ["MXVFcore"]
-        },
-        MXVFstaves: {
-            deps: ["MXVFcore", "MXVFstaffStepper"]
-        },
-        MXVFties: {
-            deps: ["MXVFcore"]
-        },
-        MXVFwriteMusic: {
-            deps: ["MXVFcore"]
+        MusicXMLParserwriteMusic: {
+            deps: ["MusicXMLParsercore"]
         }
     }
 });
 
 define([
-    "MXVFcore",
-    "MXVFcanvas",
-    "MXVFcredits",
-    "MXVFinputParams",
-    "MXVFmeasure",
-    "MXVFmeasureAttributes",
-    "MXVFmeasurePrint",
-    "MXVFnote",
-    "MXVFpage",
-    "MXVFreadMusic",
-    "MXVFscaling",
-    "MXVFstaffStepper",
-    "MXVFstaves",
-    "MXVFties",
-    "MXVFwriteMusic"
+    "MusicXMLParsercore",
+    "MusicXMLParsercredits",
+    "MusicXMLParsermeasure",
+    "MusicXMLParsermeasureAttributes",
+    "MusicXMLParsermeasurePrint",
+    "MusicXMLParsernote",
+    "MusicXMLParserpage",
+    "MusicXMLParserreadMusic",
+    "MusicXMLParserstaffStepper",
+    "MusicXMLParserstaves",
+    "MusicXMLParserties",
+    "MusicXMLParserwriteMusic"
 ], function(
-    MXVF
+    MusicXMLParser
 ){
-    return MXVF;
+    return MusicXMLParser;
 });

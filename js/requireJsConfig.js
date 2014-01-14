@@ -22,7 +22,10 @@ requirejs.config(
         raphael: "libs/raphael",
 
         // MXVF packaged as amd module
-        MXVF: "xml_parser/requireJsShim"
+        MusicXMLParser: "xml_parser/requireJsShim",
+
+        // hummingbird renderers
+        renderers: "hummingbird_renderers"
 
     },
     shim: {
