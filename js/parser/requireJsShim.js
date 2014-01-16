@@ -2,6 +2,7 @@ requirejs.config(
 {
     paths: {
 
+
         // MusicXMLParser with all parts shimmed for requirejs
         MusicXMLParsercore: "xml_parser/musicXMLParser",
         MusicXMLParsercredits: "xml_parser/credits",
@@ -17,6 +18,11 @@ requirejs.config(
         MusicXMLParserwriteMusic: "xml_parser/writeMusic"
     },
     shim: {
+
+        NoteProcessor: {
+            exports: "NoteProcessor",
+            deps: ["MusicXMLParsercore"]
+        },
 
         // XML Parser
         MusicXMLParsercore: {
