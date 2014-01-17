@@ -113,29 +113,29 @@ function(
                 }).not.to.throw();
             });
 
-            it("Should call renderer.renderNotes", function()
+            it("Should call renderer.renderChords", function()
             {
                 var notes = $song.find("measure[number=1]").children();
                 processor.processNotes(notes);
-                expect(processor.renderer.renderNotes).to.have.been.called;
+                expect(processor.renderer.renderChords).to.have.been.called;
             });
 
 
-            describe("Measure 1", function()
+            describe("Individual Notes - The Tempest, Measure 1", function()
             {
 
                 it("Should render notes for only the first staff", function()
                 {
                     var notes = $song.find("measure[number=1]").children();
                     processor.processNotes(notes);
-                    expect(processor.renderer.renderNotes).to.have.been.calledOnce;
+                    expect(processor.renderer.renderChords).to.have.been.calledOnce;
                 });
 
                 it("Should render five notes on the first staff", function()
                 {
                     processor.processNotes($song.find("measure[number=1]").children());
-                    var staffNumber = processor.renderer.renderNotes.firstCall.args[0];
-                    var notes = processor.renderer.renderNotes.firstCall.args[1];
+                    var staffNumber = processor.renderer.renderChords.firstCall.args[0];
+                    var notes = processor.renderer.renderChords.firstCall.args[1];
 
                     expect(staffNumber).to.eql(1);
                     expect(notes.length).to.eql(5);
@@ -153,21 +153,45 @@ function(
 
             });
 
-            describe("Measure 32", function()
+            describe("Accidentals - The Tempest, Measure 10", function()
+            {
+
+                it("Should render four notes on the first staff", function()
+                {
+                    processor.processNotes($song.find("measure[number=10]").children());
+                    var staffNumber = processor.renderer.renderChords.firstCall.args[0];
+                    var notes = processor.renderer.renderChords.firstCall.args[1];
+
+                    expect(staffNumber).to.eql(1);
+                    expect(notes.length).to.eql(4);
+
+                    var expectedValue = [
+                        [{pitch: {step: "B", octave: 5, alter: -1}, duration: 256 }],
+                        [{isRest: true, duration: 256}],
+                        [{pitch: {step: "G", octave: 5}, duration: 128 }],
+                        [{pitch: {step: "B", octave: 5, alter: -1}, duration: 128 }]
+                    ];
+
+                    verifyValue(expectedValue, notes);
+                });
+
+            });
+
+            describe("Chords - The Tempest, Measure 32", function()
             {
 
                 it("Should render notes for both staves", function()
                 {
                     var notes = $song.find("measure[number=32]").children();
                     processor.processNotes(notes);
-                    expect(processor.renderer.renderNotes).to.have.been.calledTwice;
+                    expect(processor.renderer.renderChords).to.have.been.calledTwice;
                 });
 
                 it("Should render three notes on the first staff", function()
                 {
                     processor.processNotes($song.find("measure[number=32]").children());
-                    var staffNumber = processor.renderer.renderNotes.firstCall.args[0];
-                    var notes = processor.renderer.renderNotes.firstCall.args[1];
+                    var staffNumber = processor.renderer.renderChords.firstCall.args[0];
+                    var notes = processor.renderer.renderChords.firstCall.args[1];
 
                     expect(staffNumber).to.eql(1);
                     expect(notes.length).to.eql(3);
@@ -176,8 +200,8 @@ function(
                 it("Should render three chords on the second staff", function()
                 {
                     processor.processNotes($song.find("measure[number=32]").children());
-                    var staffNumber = processor.renderer.renderNotes.secondCall.args[0];
-                    var chords = processor.renderer.renderNotes.secondCall.args[1];
+                    var staffNumber = processor.renderer.renderChords.secondCall.args[0];
+                    var chords = processor.renderer.renderChords.secondCall.args[1];
 
                     expect(staffNumber).to.eql(2);
                     expect(chords.length).to.eql(3);

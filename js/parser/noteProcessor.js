@@ -129,7 +129,7 @@ define([
             _.each(this._voices, function(voice) {
       
                 // Draw the chord onto the staves
-                this.renderer.renderNotes(voice.staff, voice.chords);
+                this.renderer.renderChords(voice.staff, voice.chords);
                 
                 // Draw all the matched ties
                 //this._ties.renderTieMatches();
