@@ -19,11 +19,8 @@ requirejs.config(
 
         // vexflow 
         vexflow: "libs/vexflow-free",
-        raphael: "libs/raphael",
-
-        // MXVF packaged as amd module
-        MusicXMLParser: "xml_parser/requireJsShim"
-
+        raphael: "libs/raphael"
+        
     },
     shim: {
 

@@ -32,7 +32,7 @@ define([
 
         this.renderer = options.renderer;
         this._voices = {};
-    };
+    }
 
     _.extend(NoteProcessor.prototype, {
         
@@ -129,7 +129,7 @@ define([
             _.each(this._voices, function(voice) {
       
                 // Draw the chord onto the staves
-                this.renderer.renderChords(voice.staff, voice.chords);
+                this.renderer.renderNotes(voice.staff, voice.chords);
                 
                 // Draw all the matched ties
                 //this._ties.renderTieMatches();
@@ -170,7 +170,7 @@ define([
             if (note.staff === this._voices[note.voice].staff) {
                 return this._voices[note.voice];
             } else {
-                console.log("note: notes from the same voice have different staves");
+                //console.log("note: notes from the same voice have different staves");
                 return this._voices[note.voice];
             }
         }
@@ -196,7 +196,7 @@ define([
             pitch: {
                 step   : $pitch.children('step').text(),
                 octave : parseInt($pitch.children('octave').text(), 10),
-                alter  : $pitch.children("alter").length > 0 ? parseInt($pitch.children('alter').first().text(), 10) : null
+                alter  : $pitch.children("alter").length > 0 ? parseInt($pitch.children('alter').first().text(), 10) : undefined
             }
         });
 

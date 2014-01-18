@@ -1,53 +1,74 @@
-// MusicXMLParser namespace
-// Store all names, methods, 'global' objects relative to the MusicXML-VexFlow conversion
-// MusicXMLParser
-// .error(message)
-// .setInputParams()
-
-function MusicXMLParser(options){
-
-    if(!options || !options.renderer)
+define([
+    "jquery",
+    "lodash",
+    "./creditProcessor",
+    "./measureProcessor",
+    "./noteProcessor",
+    "./scoreProcessor"
+], function(
+    $,
+    _,
+    CreditProcessor,
+    MeasureProcessor,
+    NoteProcessor,
+    ScoreProcessor
+) {
+    
+    function MusicXMLParser(options)
     {
-        throw new Error("MusicXMLParser requires a renderer");
+
+        if(!options || !options.renderer)
+        {
+            throw new Error("MusicXMLParser requires a renderer");
+        }
+
+        var noteProcessor = new NoteProcessor(options);
+        var measureProcessor = new MeasureProcessor({
+            noteProcessor: noteProcessor,
+            renderer: options.renderer
+        });
+
+        var creditProcessor = new CreditProcessor(options);
+
+        this.scoreProcessor = new ScoreProcessor({
+            renderer: options.renderer,
+            measureProcessor: measureProcessor,
+            creditProcessor: creditProcessor
+        });
     }
 
-    this.renderer = options.renderer;
+    _.extend(MusicXMLParser.prototype, {
 
-    this.page = new MusicXMLParser.page();
-    this.credits = new MusicXMLParser.credits(this.renderer, this.page);
-    this.measureAttributes = new MusicXMLParser.measureAttributes(this.renderer);
-    this.ties = new MusicXMLParser.ties();
-    this.notes = new MusicXMLParser.notes(this.ties, this.staves);
-    this.staffStepper = new MusicXMLParser.staffStepper({ ties: this.ties });
-    this.measurePrint = new MusicXMLParser.measurePrint(this.staffStepper);
-    this.staffStepper.setMeasurePrint(this.measurePrint);
+        parseMusic: function(musicXML)
+        {
+            var $score = this._getScorePartwise(musicXML);
+            this.scoreProcessor.processScore($score);
+        },
 
+        _getScorePartwise: function(musicXML)
+        {
+            var $musicXML = $(musicXML);
 
-    this.staves = new MusicXMLParser.staves(this);
-    this.writeMusic = new MusicXMLParser.writeMusic(this);
-
-    this.measure = new MusicXMLParser.measure({
-        staves: this.staves,
-        measurePrint: this.measurePrint,
-        measureAttributes: this.measureAttributes,
-        notes: this.notes,
-        page: this.page,
-        writeMusic: this.writeMusic
-    });
-};
-
-MXVF = MusicXMLParser;
-
-_.extend(MusicXMLParser.prototype, {
-
-    error: function(message) {
-            throw new Error(message);
-    },
-
-    log: function(message, arguments) {
-            if (window.console) {
-                    //window.console.log.apply(message, arguments);
+            if($musicXML.find("score-partwise").length > 0)
+            {
+                return $($musicXML.find("score-partwise")[0]);
             }
-    }
+
+            var partwise = _.find($musicXML, function(child)
+            {
+                return $(child).is("score-partwise");
+            });
+
+            if(!partwise)
+            {
+                throw new Error("This song appears not to have a score-partwise element");
+            }
+
+            return $(partwise);
+        }
+
+    });
+
+    return MusicXMLParser;
 
 });

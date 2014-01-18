@@ -8,9 +8,13 @@ module.exports = function(grunt)
     {
         jshint:
         {
-            source:
+            parser:
             {
-                src: [ "js/**/*.js", "!js/libs/**/*.js" ]
+                src: [ "js/parser/**/*.js"]
+            },
+            renderers:
+            {
+                src: ["js/renderers/consoleRenderer.js"]
             },
             build:
             {
@@ -61,7 +65,8 @@ module.exports = function(grunt)
                 {
                     "requirejs": false,
                     "define": false,
-                    "require": false
+                    "require": false,
+                    "console": false
                 }
             }
         },

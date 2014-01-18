@@ -1,5 +1,6 @@
 define(
 [
+    "jquery",
     "lodash",
     "sinon",
     "parser/noteProcessor",
@@ -8,6 +9,7 @@ define(
     "text!resources/The Tempest/the_tempest.xml"
 ],
 function(
+    $,
     _,
     sinon,
     NoteProcessor,
@@ -115,11 +117,11 @@ function(
                 expect(processor.noteProcessor.processNotes.callCount).to.eql(32);
             });
 
-            it("Should call setAttributes once for each non empty attributes element", function()
+            it("Should call setMeasureAttributes once for each non empty attributes element", function()
             {
                 processor.processMeasures($song.find("measure"));
-                expect(processor.renderer.setAttributes).to.have.been.called;
-                expect(processor.renderer.setAttributes.callCount).to.eql(8);
+                expect(processor.renderer.setMeasureAttributes).to.have.been.called;
+                expect(processor.renderer.setMeasureAttributes.callCount).to.eql(8);
             });
 
             it("Should call renderNewPage once for each page", function()

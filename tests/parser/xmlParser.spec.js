@@ -1,64 +1,84 @@
 define(
 [
+    "jquery",
     "lodash",
-    "MusicXMLParser",
-    "../mockRenderer",
+    "sinon",
+    "parser/MusicXMLParser",
+    "renderers/consoleRenderer",
     "text!resources/The Tempest/the_tempest.xml"
 ],
 function(
+    $,
     _,
+    sinon,
     MusicXMLParser,
-    MockRenderer,
+    ConsoleRenderer,
     tempestXML
 )
 {
 
-    describe("MusicXML parser", function()
+    function BuildParser()
     {
+        var renderer = new ConsoleRenderer();
+        sinon.stub(renderer);
 
-        beforeEach(function()
-        {
+        return new MusicXMLParser({
+            renderer: renderer
         });
+    }
+
+    describe("XMLParser", function()
+    {
 
         describe("Constructor", function()
         {
             it("Should require a renderer", function()
             {
-                var newParserWithoutRenderer = function()
+                var withoutRenderer = function()
                 {
                     return new MusicXMLParser();
                 };
 
-                expect(newParserWithoutRenderer).to.throw();
+                expect(withoutRenderer).to.throw();
             });
             
-            it("Should construct a parser instance", function()
+            it("Should construct a processor", function()
             {
-                var newParser = function()
-                {
-                    return new MusicXMLParser({
-                        renderer: new MockRenderer()
-                    });
-                };
-
-                expect(newParser).to.not.throw();
+                expect(BuildParser).to.not.throw();
             });
         });
 
-
-        describe("Read Music", function()
+        describe(".parseMusic", function()
         {
-            var parser;
+
+            var $song, parser;
+
             beforeEach(function()
             {
-                parser = new MusicXMLParser({
-                    renderer: new MockRenderer()
-                })
+                $song = $(tempestXML);
+                parser = BuildParser();
             });
 
-            it("Should have a readMusic method", function()
+            it("Should be a method", function()
             {
-                expect(typeof parser.readMusic).to.eql("function");
+                expect(_.isFunction(parser.parseMusic)).to.be.ok;
+            });
+
+            it("Should throw an exception if there is no score-partwise element", function()
+            {
+                expect(function()
+                {
+                    parser.parseMusic("<score-timewise></score-timewise>");
+                }).to.throw();
+            });
+
+            // it should do a bunch of other stuff too, but if it got this far then everything is wired up correctly
+            it("Should call measureProcessor.processMeasures", function()
+            {
+                sinon.spy(parser.scoreProcessor.measureProcessor, "processMeasures");
+                parser.parseMusic($song);
+                expect(parser.scoreProcessor.measureProcessor.processMeasures).to.have.been.calledOnce;
+                expect(parser.scoreProcessor.measureProcessor.processMeasures.firstCall.args[0].length).to.eql(32);
             });
 
         });

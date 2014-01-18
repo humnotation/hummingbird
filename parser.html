@@ -2,38 +2,12 @@
 <html>
 <head>
   <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
-  <title>Humming Bird</title>
+  <title>Humming Bird Notation XML Parser</title>
 
   <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css" media="screen">
 
-
-  <!-- Useful Javascript -->
-  <script src="js/libs/lodash/dist/lodash.js"></script>
-  <script src="js/libs/jquery/jquery.min.js"></script>
-  <script src="js/libs/raphael.js"></script>
-  <script src="js/libs/bootstrap.min.js"></script>
-
-  <!-- VexFlow Compiled Source -->
-  <script src="js/libs/vexflow-free.js"></script>
-
-  <!-- MusicXML to Vexflow: Parser -->
-  <script src="js/xml_parser/musicXMLParser.js"></script>
-  <script src="js/xml_parser/inputParams.js"></script>
-  <script src="js/xml_parser/page.js"></script>
-  <script src="js/xml_parser/readMusic.js"></script>
-  <script src="js/xml_parser/writeMusic.js"></script>
-  <script src="js/xml_parser/scaling.js"></script>
-  <script src="js/xml_parser/measurePrint.js"></script>
-  <script src="js/xml_parser/staffStepper.js"></script>
-  <script src="js/xml_parser/measureAttributes.js"></script>
-  <script src="js/xml_parser/measure.js"></script>
-  <script src="js/xml_parser/canvas.js"></script>
-  <script src="js/xml_parser/credits.js"></script>
-  <script src="js/xml_parser/staves.js"></script>
-  <script src="js/xml_parser/note.js"></script>
-  <script src="js/xml_parser/ties.js"></script>
-
-
+  <script src="../js/libs/requirejs/require.js"></script>
+  <script src="../js/requireJsConfig.js"></script>
 
 <style>
   #progress_bar {
@@ -79,12 +53,38 @@
 
 
 <script>
-  var mxvf = new MusicXMLParser({
-    renderer: {}
-  });
+
+requirejs(
+[
+  "lodash",
+  "bootstrap",
+  "jquery",
+  "parser/MusicXMLParser",
+  "renderers/consoleRenderer"
+],
+function(
+  lodash,
+  bootstrap,
+  $,
+  MusicXMLParser,
+  ConsoleRenderer
+)
+{
+
+
+  var parser;
+
   $(document).ready(function() {
-      mxvf.canvas.init($("#canvas")[0]);
+    parser = new MusicXMLParser({
+      renderer: new ConsoleRenderer()
+    });
+
+    doParse = function(musicXML)
+    {
+      parser.parseMusic(musicXML);
+    }
   });
+
 
   var reader;
   var progress = document.querySelector('.percent');
@@ -136,11 +136,10 @@
     };
     reader.onload = function(e) {
       // Ensure that the progress bar displays 100% at the end.
-      console.log('finished');
       progress.style.width = '100%';
       progress.textContent = '100%';
       setTimeout("document.getElementById('progress_bar').className='';", 2000);
-      mxvf.readMusic(e.target.result);
+      doParse(e.target.result);
     }
 
     // Read in the image file as a binary string.
@@ -148,6 +147,8 @@
   }
 
   document.getElementById('files').addEventListener('change', handleFileSelect, false);
+
+});
 </script>
 
 
