@@ -30,7 +30,7 @@ function(
             var methods = [
                 "setScoreMetaData",
                 "setPartList",
-                "renderCredit",
+                "addCredit",
                 "renderNewPage",
                 "renderNewSystem",
                 "renderPartStart",

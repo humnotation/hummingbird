@@ -51,14 +51,14 @@ define([
 
             // score meta data
             this.renderer.setScoreMetaData({
-                work: this._getFirst($score, "work"),
-                identification: this._getFirst($score, "identification"),
-                defaults: this._getFirst($score, "defaults"),
-                appearance: this._getFirst($score, "appearance")
+                work: this._firstChild($score, "work"),
+                identification: this._firstChild($score, "identification"),
+                defaults: this._firstChild($score, "defaults"),
+                appearance: this._firstChild($score, "appearance")
             });
 
             // list of parts
-            this.renderer.setPartList(this._getFirst($score, "part-list"));
+            this.renderer.setPartList(this._firstChild($score, "part-list"));
 
             // credits
             this.creditProcessor.processCredits($score.children("credit"));
@@ -82,7 +82,7 @@ define([
             }, this);
         },
 
-        _getFirst: function($element, childName)
+        _firstChild: function($element, childName)
         {
             return _.first($element.children(childName));
         }

@@ -88,17 +88,17 @@ function(
                 }).not.to.throw();
             });
 
-            it("Should call renderer.renderCredit once for each credit", function()
+            it("Should call renderer.addCredit once for each credit", function()
             {
                 processor.processCredits($song.find("credit"));
-                expect(processor.renderer.renderCredit).to.have.been.called;
-                expect(processor.renderer.renderCredit.callCount).to.eql(3);
+                expect(processor.renderer.addCredit).to.have.been.called;
+                expect(processor.renderer.addCredit.callCount).to.eql(3);
             });
 
             it("Should pass page number and text", function()
             {
                 processor.processCredits($song.find("credit"));
-                var credit = processor.renderer.renderCredit.firstCall.args[0];
+                var credit = processor.renderer.addCredit.firstCall.args[0];
                 expect(credit.page).to.eql(1);
                 expect(credit.text).to.eql("The Tempest");
             });

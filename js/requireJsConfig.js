@@ -9,6 +9,7 @@ requirejs.config(
         jquery: "libs/jquery/jquery",
         bootstrap: "libs/bootstrap.min",
         extend: "libs/extend",
+        xml2json: "libs/xml2json",
 
         // testing
         mocha: "libs/mocha/mocha",

@@ -18,7 +18,8 @@ function(
         _init: function(options){
 
             this.credits = [];
-            this.currentPageNumber = 1;
+            this.measureAttributes = {};
+            this.currentPageNumber = 0;
             this.visiblePageNumber = options.visiblePageNumber || 1;
         },
 
@@ -27,7 +28,7 @@ function(
 
         setPartList: function(partList){},
 
-        renderCredit: function(credit){
+        addCredit: function(credit){
             this.credits.push(credit);
         },
 
@@ -35,17 +36,28 @@ function(
             this._incrementPage();
         },
 
-        renderNewSystem: function(system){},
+        renderNewSystem: function(system){
+            this.isNewSystem = true;
+        },
 
         renderPartStart: function(part){},
 
-        setMeasureAttributes: function(attributes){},
+        setMeasureAttributes: function(attributes){
+            _.extend(this.measureAttributes, attributes);
+            console.log("Setting attributes", this.measureAttributes);
+        },
 
-        renderMeasureStart: function(measure){},
+        renderMeasureStart: function(measure){
+            this.renderStaves(measure);
+        },
+
+        renderStaves: function(){},
 
         renderNotes: function(staffNumber, chords){},
 
-        renderMeasureEnd: function(measure){},
+        renderMeasureEnd: function(measure){
+            this.isNewSystem = false;
+        },
 
         renderPartEnd: function(part){},
 

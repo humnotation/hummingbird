@@ -1,9 +1,11 @@
 define([
     "jquery",
-    "lodash"
+    "lodash",
+    "xml2json"
 ], function(
     $,
-    _
+    _,
+    xml2json
 ) {
     
     function MeasureProcessor(options)
@@ -37,11 +39,7 @@ define([
             
             var $xmlMeasure = $(xmlMeasure);
 
-            var measureAttributes = $xmlMeasure.find("attributes");
-            if(measureAttributes.length > 0 && $(measureAttributes[0]).children().length > 0)
-            {
-                this.renderer.setMeasureAttributes({ xml: measureAttributes });
-            }
+            this._processMeasureAttributes($xmlMeasure);
 
             var print = $xmlMeasure.find("print");
             if(print.length > 0)
@@ -56,21 +54,24 @@ define([
                 }
             }
 
-            var measure = new Measure($xmlMeasure);
+            var measure = xml2json($xmlMeasure);
             this.renderer.renderMeasureStart(measure);
             this.noteProcessor.processNotes($xmlMeasure.children());
             this.renderer.renderMeasureEnd(measure);
+        },
+
+        _processMeasureAttributes: function($xmlMeasure)
+        {
+            var measureAttributes = $xmlMeasure.find("attributes");
+            if(!measureAttributes.length || !$(measureAttributes[0]).children().length)
+            {
+                return;
+            }
+
+            this.renderer.setMeasureAttributes(xml2json(measureAttributes[0]));
         }
 
     });
-
-    function Measure($xmlMeasure)
-    {
-        _.extend(this, {
-            number: parseInt($xmlMeasure.attr("number"), 10),
-            xml: $xmlMeasure[0]
-        });
-    }
 
     return MeasureProcessor;
 

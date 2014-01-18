@@ -3,14 +3,16 @@ define([
     "../basicRenderer",
     "./vexFlowScaler",
     "./vexFlowCanvas",
-    "./vexFlowCredits"
+    "./vexFlowCredits",
+    "./vexFlowStaves"
 ],
 function(
     _,
     BasicRenderer,
     VexFlowScaler,
     VexFlowCanvas,
-    VexFlowCredits
+    VexFlowCredits,
+    VexFlowStaves
 ) {
 
     var VexFlowRenderer = BasicRenderer.extend({
@@ -27,6 +29,7 @@ function(
             this.vexScaler = new VexFlowScaler();
             this.vexCanvas = new VexFlowCanvas(options);
             this.vexCredits = new VexFlowCredits({ vexScaler: this.vexScaler });
+            this.vexStaves = new VexFlowStaves({ vexScaler: this.vexScaler });
         },
 
         setScoreMetaData: function(properties){
@@ -36,18 +39,28 @@ function(
 
         renderNewPage: function(page)
         {
+            this.constructor.__super__.renderNewPage.apply(this, arguments);
             if(this._pageIsVisible())
             {
-                console.log("New vex page");
                 this._clearCanvas();
-                this.vexCredits.renderCreditsForPage(this.vexCanvas.getContext(), this.credits, this.currentPageNumber);
+                this._renderCredits();
+                this.renderNewSystem();
             }
-            else
-            {
-                console.log("Page " + this.currentPageNumber + " is  not visible");
-            }
+        },
 
-            this._incrementPage();
+        renderNewSystem: function(system){
+            this.constructor.__super__.renderNewSystem.apply(this, arguments);
+            this.vexStaves.reset();
+        },
+
+        renderStaves: function(measure)
+        {
+            this.vexStaves.renderStaves(this.vexCanvas.getContext(), measure, this.measureAttributes, this.isNewSystem);
+        },
+
+        _renderCredits: function()
+        {
+            this.vexCredits.renderCreditsForPage(this.vexCanvas.getContext(), this.credits, this.currentPageNumber);
         },
 
         _clearCanvas: function()

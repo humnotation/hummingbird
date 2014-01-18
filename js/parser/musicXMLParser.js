@@ -47,7 +47,7 @@ define([
 
         _getScorePartwise: function(musicXML)
         {
-            var $musicXML = $(musicXML);
+            var $musicXML = $($.parseXML(musicXML));
 
             if($musicXML.find("score-partwise").length > 0)
             {

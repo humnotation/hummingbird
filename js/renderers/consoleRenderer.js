@@ -21,7 +21,7 @@ function(
         },
 
         // credits
-        renderCredit: function(credit)
+        addCredit: function(credit)
         {
             console.log(credit.page, credit.text);
         },

@@ -31,7 +31,7 @@ define([
                 text: $xmlCredit.find("credit-words").length > 0 ? $($xmlCredit.find("credit-words")[0]).text() : "",
                 xml: xmlCredit
             };
-            this.renderer.renderCredit(credit);
+            this.renderer.addCredit(credit);
         }
 
     });
