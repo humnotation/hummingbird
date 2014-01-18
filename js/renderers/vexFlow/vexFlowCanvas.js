@@ -1,6 +1,10 @@
 define([
+    "lodash",
+    "jquery",
     "vexflow"
 ], function(
+    _,
+    $,
     Vex                        
 ) {
 
@@ -20,7 +24,7 @@ define([
         setPxDimensionsAndClear : function(width, height) {
             this.width = Math.round(width);
             this.height = Math.round(height);
-            var $domCanvas = jQuery(this.domCanvas);
+            var $domCanvas = $(this.domCanvas);
             $domCanvas.attr('width', Math.round(width)).attr('height', Math.round(height));
             this.getContext().clearRect(0, 0, width, height);
         }, 

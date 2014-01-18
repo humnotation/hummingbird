@@ -14,7 +14,7 @@ module.exports = function(grunt)
             },
             renderers:
             {
-                src: ["js/renderers/**.js"]
+                src: ["js/renderers/**/*.js"]
             },
             build:
             {

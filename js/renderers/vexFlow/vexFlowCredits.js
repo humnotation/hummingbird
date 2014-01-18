@@ -1,6 +1,10 @@
 define([
+    "lodash",
+    "jquery",
     "vexflow"
 ], function(
+    _,
+    $,
     Vex                        
 ) {
 
