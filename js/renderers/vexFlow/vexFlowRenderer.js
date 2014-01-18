@@ -1,101 +1,66 @@
 define([
     "lodash",
+    "../basicRenderer",
+    "./vexFlowScaler",
     "./vexFlowCanvas",
-    "./vexFlowScaling"
-], function(
+    "./vexFlowCredits"
+],
+function(
     _,
+    BasicRenderer,
+    VexFlowScaler,
     VexFlowCanvas,
-    VexFlowScaling
+    VexFlowCredits
 ) {
-    
-    var VexFlowRenderer = function(options)
-    {
-        if(!options || !options.canvas)
+
+    var VexFlowRenderer = BasicRenderer.extend({
+
+        _init: function(options)
         {
-            throw new Error("VexFlowRenderer requires a canvas option");
-        }
+            this.constructor.__super__._init.apply(this, arguments);
 
-        this.canvas = new VexFlowCanvas(options.canvas);
-        this.scaling = new VexFlowScaling();
-    };
-
-    _.extend(VexFlowRenderer.prototype, {
-        
-        clear: function() {
-            // why do we do it twice?
-            this.canvas.setPxDimensions(this.scaling.width+5, this.scaling.height+5);
-            this.canvas.setPxDimensions(this.scaling.width, this.scaling.height);
-        },
-
-        renderCredit: function(credit)
-        {
-            var ctx = this.canvas.getContext();
-            ctx.font = "" + credit.fontSize + "px Ariel";
-
-            var xpix = this.scaling.x(credit.defaultX);
-            var ypix = this.scaling.y(credit.defaultY);
-
-            if (_.contains(["left","right","center"], credit.justify) {
-                ctx.textAlign = credit.justify;
-            } else {
-                throw new Error('Unsupported credit.justify= ' + credit.justify);
-            }
-
-            if (_.contains(["top", "bottom"], credit.valign)) {
-                ctx.textBaseline = credit.valign;  // appears not to do anything
-            } else {
-                throw new Error('Unsupported credit.valign= ' + credit.valign);
-            }
-
-              // Render the text
-              ctx.fillText(credit.creditWords, xpix,ypix);
-        },
-
-        renderNotes: function(staveNumber, noteArray)
-        {
-            Vex.Flow.Formatter.FormatAndDraw(this.canvas.getContext(), stave, noteArray);
-        },
-
-        renderClef: function(staveNumber, clefType, clef.line)
-        {
-            var vexStave = this._getStave(clefNumber);
-            if (vexStave) {
-                vexStave.addClef(clefType);                            
-                console.log("measureAttributes: added clef ", clefType, " to stave number " + clefNumber);
-            } else {
-                console.log("measureAttributes: no staves.getStave for clef number " + clefNumber);
-            }
-        },
-
-        renderTimeSignature: function(numerator, denominator)
-        {
-            _.each(this._getStaves(), function(stave)
+            if(!options || !options.canvas)
             {
-                stave.addTimeSignature(numerator + "/" + denominator);
-            });
+                throw new Error("VexFlowRenderer requires a canvas element");
+            }
+ 
+            this.vexScaler = new VexFlowScaler();
+            this.vexCanvas = new VexFlowCanvas(options);
+            this.vexCredits = new VexFlowCredits({ vexScaler: this.vexScaler });
         },
 
-        renderKeySignature: function(key)
+        setScoreMetaData: function(properties){
+            this.constructor.__super__.setScoreMetaData.apply(this, arguments);
+            this.vexScaler.init(properties.defaults);
+        },
+
+        renderNewPage: function(page)
         {
-            var keySig = new Vex.Flow.KeySignature(vexKey);
-            _.each(this._getStaves(), function(stave)
+            if(this._pageIsVisible())
             {
-                keySig.addToStave(stave);
-            });
+                console.log("New vex page");
+                this._clearCanvas();
+                this.vexCredits.renderCreditsForPage(this.vexCanvas.getContext(), this.credits, this.currentPageNumber);
+            }
+            else
+            {
+                console.log("Page " + this.currentPageNumber + " is  not visible");
+            }
+
+            this._incrementPage();
         },
 
-        _getStaves: function()
+        _clearCanvas: function()
         {
-            throw new Error("VexFlowRenderer._getStaves finish me");
+            this.vexCanvas.setPxDimensionsAndClear(this.vexScaler.width, this.vexScaler.height);
         },
 
-        _getStave: function()
+        _pageIsVisible: function()
         {
-            throw new Error("VexFlowRenderer._getStave finish me");
+            return this.currentPageNumber === this.visiblePageNumber;
         }
 
     });
 
     return VexFlowRenderer;
-
 });

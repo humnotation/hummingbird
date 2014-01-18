@@ -8,6 +8,7 @@ requirejs.config(
         lodash: "libs/lodash/dist/lodash",
         jquery: "libs/jquery/jquery",
         bootstrap: "libs/bootstrap.min",
+        extend: "libs/extend",
 
         // testing
         mocha: "libs/mocha/mocha",

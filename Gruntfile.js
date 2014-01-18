@@ -14,7 +14,7 @@ module.exports = function(grunt)
             },
             renderers:
             {
-                src: ["js/renderers/consoleRenderer.js"]
+                src: ["js/renderers/**.js"]
             },
             build:
             {

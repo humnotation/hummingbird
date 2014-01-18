@@ -60,14 +60,18 @@ requirejs(
   "bootstrap",
   "jquery",
   "parser/MusicXMLParser",
-  "renderers/consoleRenderer"
+  "renderers/multiRenderer",
+  "renderers/consoleRenderer",
+  "renderers/vexFlow/vexFlowRenderer"
 ],
 function(
   lodash,
   bootstrap,
   $,
   MusicXMLParser,
-  ConsoleRenderer
+  MultiRenderer,
+  ConsoleRenderer,
+  vexFlowRenderer
 )
 {
 
@@ -75,8 +79,12 @@ function(
   var parser;
 
   $(document).ready(function() {
+
+    var multiRenderer = new MultiRenderer();
+    multiRenderer.addRenderer(new vexFlowRenderer({canvas: $("#canvas")[0]}));
+
     parser = new MusicXMLParser({
-      renderer: new ConsoleRenderer()
+      renderer: multiRenderer
     });
 
     doParse = function(musicXML)

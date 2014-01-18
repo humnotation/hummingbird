@@ -1,4 +1,5 @@
 .DS_Store
 *.swp
 .sass-cache/
+hummingbird_original/
 todo.txt
