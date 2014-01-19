@@ -1,9 +1,11 @@
 define([
     "jquery",
-    "lodash"
+    "lodash",
+    "xml2json"
 ], function(
     $,
-    _
+    _,
+    xml2json
 ) {
     
     function CreditProcessor(options)
@@ -24,14 +26,7 @@ define([
         },
         
         _processCredit: function(xmlCredit) {
-        
-            var $xmlCredit = $(xmlCredit);
-            var credit = {
-                page: parseInt($xmlCredit.attr("page"), 10),
-                text: $xmlCredit.find("credit-words").length > 0 ? $($xmlCredit.find("credit-words")[0]).text() : "",
-                xml: xmlCredit
-            };
-            this.renderer.addCredit(credit);
+            this.renderer.addCredit(xml2json(xmlCredit));
         }
 
     });

@@ -26,12 +26,13 @@ define([
             var creditsForThisPage = _.filter(credits, { page: currentPageNumber });
             _.each(creditsForThisPage, function(credit)
             {
-                var $creditWords = $(credit.xml).children('credit-words'),
-                    justify     = $creditWords.attr('justify'),
-                    valign      = $creditWords.attr('valign'),
-                    defaultX    = parseFloat($creditWords.attr('default-x')),
-                    defaultY    = parseFloat($creditWords.attr('default-y')),
-                    fontSize    = parseFloat($creditWords.attr('font-size'));
+                var words = credit["credit-words"],
+                    text        = words.text,
+                    justify     = words.justify,
+                    valign      = words.valign,
+                    defaultX    = words["default-x"],
+                    defaultY    = words["default-y"],
+                    fontSize    = words["font-size"];
 
 
                 ctx.font = "" + fontSize + "px Ariel";
@@ -47,7 +48,7 @@ define([
                 }
 
                 // Render the text
-                ctx.fillText(credit.text, xpix, ypix);
+                ctx.fillText(text, xpix, ypix);
 
             }, this);
         }

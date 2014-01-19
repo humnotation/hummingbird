@@ -28,6 +28,7 @@ function(
         _addMethods: function()
         {
             var methods = [
+                "reset",
                 "setScoreMetaData",
                 "setPartList",
                 "addCredit",

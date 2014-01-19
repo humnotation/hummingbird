@@ -1,9 +1,11 @@
 define([
     "jquery",
-    "lodash"
+    "lodash",
+    "xml2json"
 ], function(
     $,
-    _
+    _,
+    xml2json
 ) {
     
     function ScoreProcessor(options)
@@ -49,16 +51,19 @@ define([
                 throw new Error("processScore requires a score-partwise element");
             }
 
+            // start clean
+            this.renderer.reset();
+            
             // score meta data
             this.renderer.setScoreMetaData({
-                work: this._firstChild($score, "work"),
-                identification: this._firstChild($score, "identification"),
-                defaults: this._firstChild($score, "defaults"),
-                appearance: this._firstChild($score, "appearance")
+                work: xml2json(this._firstChild($score, "work")),
+                identification: xml2json(this._firstChild($score, "identification")),
+                defaults: xml2json(this._firstChild($score, "defaults")),
+                appearance: xml2json(this._firstChild($score, "appearance"))
             });
 
             // list of parts
-            this.renderer.setPartList(this._firstChild($score, "part-list"));
+            this.renderer.setPartList(xml2json(this._firstChild($score, "part-list")));
 
             // credits
             this.creditProcessor.processCredits($score.children("credit"));
@@ -66,18 +71,12 @@ define([
             // process measures and notes for each part
             _.each($score.find("part"), function(xmlPart)
             {
-                var $part = $(xmlPart);
-                this.renderer.renderPartStart({
-                    id: $part.attr("id"),
-                    xml: xmlPart
-                });
+                var jsonPart = xml2json(xmlPart, { includeChildren: false });
+                this.renderer.renderPartStart(jsonPart);
 
-                this.measureProcessor.processMeasures($part.children("measure"));
+                this.measureProcessor.processMeasures($(xmlPart).children("measure"));
 
-                this.renderer.renderPartEnd({
-                    id: $part.attr("id"),
-                    xml: xmlPart
-                });
+                this.renderer.renderPartEnd(jsonPart);
 
             }, this);
         },

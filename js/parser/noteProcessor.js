@@ -7,23 +7,16 @@
 */
 define([
     "jquery",
-    "lodash"
+    "lodash",
+    "xml2json"
 ], function(
     $,
-    _
+    _,
+    xml2json
 ) {
 
     function NoteProcessor(options)
     {
-        /*
-        if(!options || !options.ties || !options.renderer)
-        {
-            throw new Error("MusicXMLParser.notes requires ties and renderer");
-        }
-
-        this._ties = options.ties;
-        */
-
 
         if(!options || !options.renderer)
         {
@@ -179,29 +172,21 @@ define([
 
     function Note($xmlNote)
     {
+        _.extend(this, xml2json($xmlNote));
+
         // a few basic attributes
         _.extend(this, {
             isRest     : (0 < $xmlNote.children('rest').length),
             isChord    : (0 < $xmlNote.children('chord').length),
             isIgnore   : ($xmlNote.attr('print-object') === "no"),
-            isStaccato : $xmlNote.find("articulations > staccato").length > 0,
-            duration   : parseInt($xmlNote.children('duration').text(), 10),
-            voice      : parseInt($xmlNote.children('voice').text(), 10),
-            staff      : parseInt($xmlNote.children('staff').text(), 10)
+            isStaccato : $xmlNote.find("articulations > staccato").length > 0
         });
 
-        // pitch attributes
-        var $pitch = $xmlNote.children("pitch");
-        _.extend(this, {
-            pitch: {
-                step   : $pitch.children('step').text(),
-                octave : parseInt($pitch.children('octave').text(), 10),
-                alter  : $pitch.children("alter").length > 0 ? parseInt($pitch.children('alter').first().text(), 10) : undefined
-            }
-        });
-
-        // pass through the raw xml if anybody wants more details
-        this.xml = $xmlNote[0];
+        // fix problem w/ rest having no voice
+        if(this.isRest && !this.voice && this.staff)
+        {
+            this.voice = this.staff;
+        }
     }
         
     return NoteProcessor;

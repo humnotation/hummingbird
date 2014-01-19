@@ -55,7 +55,7 @@ function(
 
             beforeEach(function()
             {
-                $song = $(tempestXML);
+                $song = $($.parseXML(tempestXML));
                 processor = BuildProcessor();
             });
 
@@ -100,7 +100,7 @@ function(
                 processor.processCredits($song.find("credit"));
                 var credit = processor.renderer.addCredit.firstCall.args[0];
                 expect(credit.page).to.eql(1);
-                expect(credit.text).to.eql("The Tempest");
+                expect(credit["credit-words"].text).to.eql("The Tempest");
             });
 
 

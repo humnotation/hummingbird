@@ -63,7 +63,7 @@ function(
 
             beforeEach(function()
             {
-                $song = $(tempestXML);
+                $song = $($.parseXML(tempestXML));
                 processor = BuildProcessor();
             });
 
@@ -127,7 +127,8 @@ function(
             it("Should call renderNewPage once for each page", function()
             {
                 processor.processMeasures($song.find("measure"));
-                expect(processor.renderer.renderNewPage).to.have.been.calledTwice;
+                expect(processor.renderer.renderNewPage).to.have.been.called;
+                expect(processor.renderer.renderNewPage.callCount).to.eql(2);
             });
 
             it("Should call renderNewSystem once for each new staff system", function()

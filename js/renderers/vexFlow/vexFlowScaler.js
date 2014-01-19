@@ -14,21 +14,19 @@ define([
         init: function(defaults)
         {
 
-            var $xml = $(defaults);
-
-            var Scaler = $xml.find('scaling'),
-                    pageMargins    = $xml.find('page-margins'),
-                    pageLayout = $xml.find('page-layout');
+            var layout = defaults["page-layout"];
+            var margins = layout["page-margins"];
+            var scaling = defaults.scaling;
 
             // 'virtual' coordinates from XML-land, in terms of Tenths (they could be anything)
-            this.vmillimeters    = parseFloat(Scaler.children('millimeters').text());
-            this.vtenths             = parseFloat(Scaler.children('tenths').text());
-            this.vleftMargin     = parseFloat(pageMargins.children('left-margin').text());
-            this.vrightMargin    = parseFloat(pageMargins.children('right-margin').text());
-            this.vtopMargin        = parseFloat(pageMargins.children('top-margin').text());
-            this.vbottomMargin = parseFloat(pageMargins.children('bottom-margin').text());
-            this.vpageHeight     = parseFloat(pageLayout.children('page-height').text());
-            this.vpageWidth        = parseFloat(pageLayout.children('page-width').text());
+            this.vmillimeters    = scaling.millimeters;
+            this.vtenths             = scaling.tenths;
+            this.vleftMargin     = margins["left-margin"];
+            this.vrightMargin    = margins["right-margin"];
+            this.vtopMargin        = margins["top-margin"];
+            this.vbottomMargin = margins["bottom-margin"];
+            this.vpageHeight     = layout["page-height"];
+            this.vpageWidth        = layout["page-width"];
             this.scaleFactor = this.vmillimeters * 160 / (this.vtenths * 25.4);    // see example below
 
             /* Proof: 
@@ -42,7 +40,8 @@ define([
              d = D * 7.5184/40 * 1/25.4 * 72 px/in
              d = D * 72 * vmillimeters/(vtenths * 25.4)    
         */
-            //console.log('Scale factor is ' + this.scaleFactor);
+            console.log('Scale factor is ' + this.scaleFactor);
+            console.log(this);
 
             // Canvas coordinates
             this.leftMargin     = Math.round(this.scaleFactor * this.vleftMargin);
@@ -63,11 +62,19 @@ define([
         }, 
 
         getHeight: function() {
-            return this.height || this.mxvf.error('Canvas Scaler not initialized');
+            if(!this.height)
+            {
+                throw new Error("Canvas scaler not initialized");
+            }
+            return this.height;
         },
 
         getWidth: function() {
-            return this.width || this.mxvf.error('Canvas Scaler not initialized');
+            if(!this.width)
+            {
+                throw new Error("Canvas scaler not initialized");
+            }
+            return this.width;
         },
         // Coordinate conversions
         //         horizontal (x) is easy because both are computed from the left edge

@@ -54,7 +54,7 @@ define([
                 }
             }
 
-            var measure = xml2json($xmlMeasure);
+            var measure = xml2json($xmlMeasure, { includeChildren: false });
             this.renderer.renderMeasureStart(measure);
             this.noteProcessor.processNotes($xmlMeasure.children());
             this.renderer.renderMeasureEnd(measure);

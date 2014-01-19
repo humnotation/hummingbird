@@ -9,6 +9,11 @@ function(
 
     _.extend(ConsoleRenderer.prototype, {
 
+        reset: function()
+        {
+            console.clear();
+        },
+        
         // score properties { work, identification, defaults, appearance }
         setScoreMetaData: function(properties)
         {
@@ -23,7 +28,7 @@ function(
         // credits
         addCredit: function(credit)
         {
-            console.log(credit.page, credit.text);
+            console.log("credit", credit);
         },
 
         // new page
@@ -73,7 +78,7 @@ function(
                         {
                             var noteDetails = "" + note.pitch.step + note.pitch.octave;
 
-                            if(_.has(note.pitch, "alter") && !_.isUndefined(note.pitch.alter))
+                            if(_.has(note.pitch, "alter"))
                             {
                                 noteDetails += "." + note.pitch.alter;
                             }

@@ -51,11 +51,10 @@ function(
         describe(".parseMusic", function()
         {
 
-            var $song, parser;
+            var parser;
 
             beforeEach(function()
             {
-                $song = $(tempestXML);
                 parser = BuildParser();
             });
 
@@ -76,8 +75,9 @@ function(
             it("Should call measureProcessor.processMeasures", function()
             {
                 sinon.spy(parser.scoreProcessor.measureProcessor, "processMeasures");
-                parser.parseMusic($song);
-                expect(parser.scoreProcessor.measureProcessor.processMeasures).to.have.been.calledOnce;
+                parser.parseMusic(tempestXML);
+                expect(parser.scoreProcessor.measureProcessor.processMeasures).to.have.been.called;
+                expect(parser.scoreProcessor.measureProcessor.processMeasures.callCount).to.eql(1);
                 expect(parser.scoreProcessor.measureProcessor.processMeasures.firstCall.args[0].length).to.eql(32);
             });
 

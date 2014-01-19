@@ -39,7 +39,6 @@
         <div class="container">
           <a class="brand" href="#">Humming Bird</a>
           <input type="file" id="files" name="file" />
-          <button class="btn" onclick="abortRead();">Cancel read</button>
           <div id="progress_bar"><div class="percent">0%</div></div>
           <div id="error-message"></div>
         </div>
@@ -59,6 +58,7 @@ requirejs(
   "lodash",
   "bootstrap",
   "jquery",
+  "fileUploader",
   "parser/MusicXMLParser",
   "renderers/multiRenderer",
   "renderers/consoleRenderer",
@@ -68,6 +68,7 @@ function(
   lodash,
   bootstrap,
   $,
+  FileUploader,
   MusicXMLParser,
   MultiRenderer,
   ConsoleRenderer,
@@ -82,79 +83,37 @@ function(
 
     var multiRenderer = new MultiRenderer();
     multiRenderer.addRenderer(new vexFlowRenderer({canvas: $("#canvas")[0]}));
+    multiRenderer.addRenderer(new ConsoleRenderer());
 
     parser = new MusicXMLParser({
       renderer: multiRenderer
     });
 
-    doParse = function(musicXML)
-    {
-      parser.parseMusic(musicXML);
-    }
+
+    new FileUploader({
+      input: $("input[name=file]")[0],
+      callback: _.bind(parser.parseMusic, parser),
+      progress: updateProgress,
+      start: updateProgress
+    });
+
   });
 
 
-  var reader;
   var progress = document.querySelector('.percent');
 
-  function abortRead() {
-    reader.abort();
-  }
-
-  function errorHandler(evt) {
-    switch(evt.target.error.code) {
-      case evt.target.error.NOT_FOUND_ERR:
-        alert('File Not Found!');
-        break;
-      case evt.target.error.NOT_READABLE_ERR:
-        alert('File is not readable');
-        break;
-      case evt.target.error.ABORT_ERR:
-        break; // noop
-      default:
-        alert('An error occurred reading this file.');
-    };
-  }
 
   function updateProgress(evt) {
     // evt is an ProgressEvent.
-    if (evt.lengthComputable) {
-      var percentLoaded = Math.round((evt.loaded / evt.total) * 100);
-      // Increase the progress bar length.
-      if (percentLoaded < 100) {
-        progress.style.width = percentLoaded + '%';
-        progress.textContent = percentLoaded + '%';
-      }
+    var percentLoaded = 0;
+    if (evt && evt.total > 0 && evt.lengthComputable) {
+      percentLoaded = Math.round((evt.loaded / evt.total) * 100);
     }
+    $(".progress_bar").addClass("loading");
+    $(".percent").css("width", percentLoaded + '%');
+    $(".percent").text(percentLoaded + "%");
   }
 
-  function handleFileSelect(evt) {
-    // Reset progress indicator on new file selection.
-    progress.style.width = '0%';
-    progress.textContent = '0%';
-
-    reader = new FileReader();
-    reader.onerror = errorHandler;
-    reader.onprogress = updateProgress;
-    reader.onabort = function(e) {
-      alert('File read cancelled');
-    };
-    reader.onloadstart = function(e) {
-      document.getElementById('progress_bar').className = 'loading';
-    };
-    reader.onload = function(e) {
-      // Ensure that the progress bar displays 100% at the end.
-      progress.style.width = '100%';
-      progress.textContent = '100%';
-      setTimeout("document.getElementById('progress_bar').className='';", 2000);
-      doParse(e.target.result);
-    }
-
-    // Read in the image file as a binary string.
-    reader.readAsBinaryString(evt.target.files[0]);
-  }
-
-  document.getElementById('files').addEventListener('change', handleFileSelect, false);
 
 });
 </script>

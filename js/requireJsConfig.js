@@ -10,6 +10,7 @@ requirejs.config(
         bootstrap: "libs/bootstrap.min",
         extend: "libs/extend",
         xml2json: "libs/xml2json",
+        fileUploader: "libs/fileUploader",
 
         // testing
         mocha: "libs/mocha/mocha",

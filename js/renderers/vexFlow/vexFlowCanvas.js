@@ -21,13 +21,17 @@ define([
             return this.vexRenderer.getContext();
         },
 
-        setPxDimensionsAndClear : function(width, height) {
+        setSize : function(width, height) {
             this.width = Math.round(width);
             this.height = Math.round(height);
             var $domCanvas = $(this.domCanvas);
             $domCanvas.attr('width', Math.round(width)).attr('height', Math.round(height));
-            this.getContext().clearRect(0, 0, width, height);
         }, 
+
+        clear: function()
+        {
+            this.getContext().clearRect(0, 0, this.width, this.height);
+        },
 
         // experiment for measuring text width - not even necessary
         measureTextWidth: function(text) {

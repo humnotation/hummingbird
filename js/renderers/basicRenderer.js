@@ -16,11 +16,16 @@ function(
     _.extend(BasicRenderer.prototype, {
 
         _init: function(options){
+            this.options = options;
+            this.reset();
+        },
 
+        reset: function()
+        {
             this.credits = [];
             this.measureAttributes = {};
             this.currentPageNumber = 0;
-            this.visiblePageNumber = options.visiblePageNumber || 1;
+            this.visiblePageNumber = this.options.visiblePageNumber || 1;
         },
 
         // work, identification, defults, appearance

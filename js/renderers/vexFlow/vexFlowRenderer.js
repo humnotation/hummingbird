@@ -25,9 +25,18 @@ function(
             {
                 throw new Error("VexFlowRenderer requires a canvas element");
             }
- 
+        },
+
+        reset: function()
+        {
+            if(this.vexCanvas)
+            {
+                this.vexCanvas.clear();
+            }
+            
+            this.constructor.__super__.reset.apply(this, arguments);
+            this.vexCanvas = new VexFlowCanvas(this.options);
             this.vexScaler = new VexFlowScaler();
-            this.vexCanvas = new VexFlowCanvas(options);
             this.vexCredits = new VexFlowCredits({ vexScaler: this.vexScaler });
             this.vexStaves = new VexFlowStaves({ vexScaler: this.vexScaler });
         },
@@ -65,7 +74,8 @@ function(
 
         _clearCanvas: function()
         {
-            this.vexCanvas.setPxDimensionsAndClear(this.vexScaler.width, this.vexScaler.height);
+            this.vexCanvas.setSize(this.vexScaler.getWidth(), this.vexScaler.getHeight());
+            this.vexCanvas.clear();
         },
 
         _pageIsVisible: function()

@@ -79,7 +79,7 @@ function(
 
             beforeEach(function()
             {
-                $song = $(tempestXML);
+                $song = $($.parseXML(tempestXML));
                 processor = BuildProcessor();
             });
 
@@ -108,7 +108,7 @@ function(
             {
                 expect(function()
                 {
-                    processor.processScore($song);
+                    processor.processScore($song.find("score-partwise")[0]);
                 }).not.to.throw();
             });
 
@@ -116,7 +116,7 @@ function(
             {
                 expect(function()
                 {
-                    processor.processScore($song);
+                    processor.processScore($song.find("score-partwise"));
                 }).not.to.throw();
             });
 
@@ -124,46 +124,47 @@ function(
             {
                 expect(function()
                 {
-                    processor.processScore([$song, $song]);
+                    processor.processScore([$song.find("score-partwise"), $song.find("score-partwise")]);
                 }).to.throw();
             });
 
             it("Should call renderer.setScoreMetaData", function()
             {
-                processor.processScore($song);
+                processor.processScore($song.find("score-partwise"));
                 expect(processor.renderer.setScoreMetaData).to.have.been.calledOnce;
             });
 
             it("Should call renderer.setPartList", function()
             {
-                processor.processScore($song);
+                processor.processScore($song.find("score-partwise"));
                 expect(processor.renderer.setPartList).to.have.been.calledOnce;
             });
 
             it("Should call creditProcessor.processCredits", function()
             {
-                processor.processScore($song);
-                expect(processor.creditProcessor.processCredits).to.have.been.calledOnce;
+                processor.processScore($song.find("score-partwise"));
+                expect(processor.creditProcessor.processCredits).to.have.been.called;
                 expect(processor.creditProcessor.processCredits.firstCall.args[0].length).to.eql(3);
             });
 
 
             it("Should call renderer.renderPartStart", function()
             {
-                processor.processScore($song);
+                processor.processScore($song.find("score-partwise"));
                 expect(processor.renderer.renderPartStart).to.have.been.calledOnce;
             });
 
             it("Should call measureProcessor.processMeasures", function()
             {
-                processor.processScore($song);
-                expect(processor.measureProcessor.processMeasures).to.have.been.calledOnce;
+                processor.processScore($song.find("score-partwise"));
+                expect(processor.measureProcessor.processMeasures).to.have.been.called;
+                expect(processor.measureProcessor.processMeasures.callCount).to.eql(1);
                 expect(processor.measureProcessor.processMeasures.firstCall.args[0].length).to.eql(32);
             });
 
             it("Should call renderer.renderPartEnd", function()
             {
-                processor.processScore($song);
+                processor.processScore($song.find("score-partwise"));
                 expect(processor.renderer.renderPartEnd).to.have.been.calledOnce;
             });
 

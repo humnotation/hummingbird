@@ -82,7 +82,7 @@ function(
 
             beforeEach(function()
             {
-                $song = $(tempestXML);
+                $song = $($.parseXML(tempestXML));
                 processor = BuildProcessor();
             });
 
