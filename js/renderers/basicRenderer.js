@@ -41,14 +41,50 @@ function(
             this._incrementPage();
         },
 
-        renderNewSystem: function(system){
+        renderNewSystem: function(system)   {
             this.isNewSystem = true;
         },
 
         renderPartStart: function(part){},
 
         setMeasureAttributes: function(attributes){
-            _.extend(this.measureAttributes, attributes);
+
+            var shouldBeArray = ["clef", "staff-details"];
+            _.each(attributes, function(value, key)
+            {
+
+                if(_.contains(shouldBeArray, key) && !_.isArray(value))
+                {
+                    value = [value];
+                }
+
+                if(_.isObject(this.measureAttributes[key]))
+                {
+                    _.extend(this.measureAttributes[key], value);
+                }
+                else if(_.isArray(this.measureAttributes[key]))
+                {
+                    _.each(value, function(item)
+                    {
+
+                        var matchingItem = _.find(this.measureAttributes[key], { number: item.number });
+                        if(matchingItem)
+                        {
+                            _.extend(matchingItem, item);
+                        }
+                        else
+                        {
+                            this.measureAttributes[key].push(item);
+                        }
+
+                    }, this);
+                }
+                else
+                {
+                    this.measureAttributes[key] = value;
+                }
+            }, this);
+
             console.log("Setting attributes", this.measureAttributes);
         },
 

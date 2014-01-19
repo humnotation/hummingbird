@@ -53,7 +53,9 @@ function(
             {
                 this._clearCanvas();
                 this._renderCredits();
+                this.isNewPage = true;
                 this.renderNewSystem();
+                this.isNewPage = false;
             }
         },
 
@@ -64,7 +66,12 @@ function(
 
         renderStaves: function(measure)
         {
-            this.vexStaves.renderStaves(this.vexCanvas.getContext(), measure, this.measureAttributes, this.isNewSystem);
+            var options = {
+                clef: this.isNewSystem,
+                key: this.isNewPage,
+                time: this.isNewPage 
+            };
+            this.vexStaves.renderStaves(this.vexCanvas.getContext(), measure, this.measureAttributes, options);
         },
 
         _renderCredits: function()

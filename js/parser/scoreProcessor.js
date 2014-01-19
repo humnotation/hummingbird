@@ -52,8 +52,11 @@ define([
             }
 
             // start clean
-            this.renderer.reset();
-            
+            if(this.hasProcessed)
+            {
+                this.renderer.reset();
+            }
+
             // score meta data
             this.renderer.setScoreMetaData({
                 work: xml2json(this._firstChild($score, "work")),
@@ -79,6 +82,8 @@ define([
                 this.renderer.renderPartEnd(jsonPart);
 
             }, this);
+
+            this.hasProcessed = true;
         },
 
         _firstChild: function($element, childName)
