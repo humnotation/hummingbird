@@ -39,6 +39,7 @@ function(
 
         renderNewPage: function(page){
             this._incrementPage();
+            this.isNewPage = true;
         },
 
         renderNewSystem: function(system)   {
@@ -98,6 +99,7 @@ function(
 
         renderMeasureEnd: function(measure){
             this.isNewSystem = false;
+            this.isNewPage = false;
         },
 
         renderPartEnd: function(part){},

@@ -5,7 +5,7 @@ define([
 ], function(
     _,
     $,
-    Vex                        
+    Vex                                                
 ) {
 
     var VexStaves = function(options) {
@@ -52,53 +52,89 @@ define([
         },
 
         _decorateStave: function(stave, staffNumber, measure, measureAttributes, options) {
- 
+
             if(options.clef)
             {
-                var clef = _.find(measureAttributes.clef, {number: staffNumber });
-                if(clef)
-                {
-                    var clefType = this.clefTypes[clef.sign];
-                    if(clefType)
+                    var clef = _.find(measureAttributes.clef, {number: staffNumber });
+                    if(clef)
                     {
-                        stave.addClef(clefType); 
+                            var clefType = this.clefTypes[clef.sign];
+                            if(clefType)
+                            {
+                                    stave.addClef(clefType); 
+                            }
                     }
-                }
             } 
-/*        
-          // add the time signature only once, if it is not yet printed yet
-          if (drawTimeSig === true) {
-              for (staveNumber in MXVF.staves.getStaves()) {
-                  MXVF.staves.getStave(staveNumber).addTimeSignature(this.beatsPerMeasure + "/" + this.beatsType);
-              }
-          }
-          
-          
-          // the boolean depends on whether it is the right spot on the page to print the signature
-          // from keyFifths and keyMode
-          if (drawKeySig === true) {
-             var vexKey = this.keySymbol[this.keyFifths + "," + this.keyMode];
-             if (vexKey) {
-                 var keySig = new Vex.Flow.KeySignature(vexKey);
-                 for (staveNumber in MXVF.staves.getStaves()) {
-                     keySig.addToStave(MXVF.staves.getStave(staveNumber));
-                 }
-              } else {
-                 MXVF.error("unsupported key type: fifths=" + this.keyFifths + ", mode=" + this.keyMode);
-              }
-          }
- */     
-      },
 
-      clefTypes: {
-        'G' : 'treble',  // fully expected
-        'F' : 'bass',    // fully expected
-        //'C' : 'tenor',    // does this mean tenor or alto??
-        //'': 'alto',    // not in xml spec (or else tenor isn't)
-        // they both use the same symbol but not in the same place on the stave!
-        // see wikipedia and see the test files etc.
-        'percussion': 'percussion'
-        }
+            if(options.time && measureAttributes.time)
+            {
+                stave.addTimeSignature(measureAttributes.time.beats + "/" + measureAttributes.time["beat-type"]);
+            }
+
+            if(options.key && measureAttributes.key)
+            {
+                var vexKey = this.keySymbol[measureAttributes.key.fifths + "," + measureAttributes.key.mode];
+                if(vexKey)
+                {
+                    var keySig = new Vex.Flow.KeySignature(vexKey);
+                    keySig.addToStave(stave);
+                }
+                else
+                {
+                    throw new Error("Unsupported key type", measureAttributes.key);
+                }
+            }
+        },
+
+        clefTypes: {
+            'G' : 'treble',    // fully expected
+            'F' : 'bass',        // fully expected
+            //'C' : 'tenor',        // does this mean tenor or alto??
+            //'': 'alto',        // not in xml spec (or else tenor isn't)
+            // they both use the same symbol but not in the same place on the stave!
+            // see wikipedia and see the test files etc.
+            'percussion': 'percussion'
+        },
+
+        // fifths: is the number of sharps or flats so 0 means key of C or Am
+        // mode: "Valid mode values include major, minor, dorian, phrygian, lydian, mixolydian, aeolian, ionian, and locrian."
+        // This is as big as I could make the table.  I tried to maximize it
+        // There are also nontraditional keys in the XML spec
+        // http://oxygenxml.com/samples/xml-schema-documentation/MusicXML-Schema/musicxml.html
+        // There is also a possibility of a key element containing a 'cancel' element, meaning the old key is
+        // supposed to be canceled before the new one appears.  I don't know how to write that
+        keySymbol: {
+            "0,minor" : "Am",
+            "1,minor" : "Em",
+            "2,minor" : "Bm",
+            "3,minor" : "F#m",
+            "4,minor" : "C#m",
+            "5,minor" : "G#m",
+            "6,minor" : "D#m",
+            "7,minor" : "Bbm",
+            "-1,minor" : "Dm",
+            "-2,minor" : "Gm",
+            "-3,minor" : "Cm",
+            "-4,minor" : "Fm",
+            "-5,minor" : "Bbm",
+            "-6,minor" : "Ebm",
+            "-7,minor" : "G#m",
+            "0,major" : "C",  // the M can be omitted
+            "1,major" : "G",
+            "2,major" : "D",
+            "3,major" : "A",
+            "4,major" : "E",
+            "5,major" : "B",
+            "6,major" : "F#",
+            "7,major" : "Db",
+            "-1,major" : "F",
+            "-2,major" : "Bb",
+            "-3,major" : "Eb",
+            "-4,major" : "Ab",
+            "-5,major" : "Db",
+            "-6,major" : "Gb",
+            "-7,major" : "B"
+        },
 
     });
 
