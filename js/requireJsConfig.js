@@ -21,7 +21,7 @@ requirejs.config(
         resources: "../resources",
 
         // vexflow 
-        vexflow: "libs/vexflow-free",
+        vexflow: "libs/vexflow-unpacked",
         raphael: "libs/raphael"
         
     },

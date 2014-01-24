@@ -70,7 +70,7 @@ function(
 
                 chord += _.map(notes, 
                     function(note) {
-                        if(note.isRest)
+                        if(note.rest)
                         {
                             return "rest";
                         }

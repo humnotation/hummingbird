@@ -4,7 +4,8 @@ define([
     "./vexFlowScaler",
     "./vexFlowCanvas",
     "./vexFlowCredits",
-    "./vexFlowStaves"
+    "./vexFlowStaves",
+    "./vexFlowNotes"
 ],
 function(
     _,
@@ -12,7 +13,8 @@ function(
     VexFlowScaler,
     VexFlowCanvas,
     VexFlowCredits,
-    VexFlowStaves
+    VexFlowStaves,
+    VexFlowNotes
 ) {
 
     var VexFlowRenderer = BasicRenderer.extend({
@@ -39,6 +41,7 @@ function(
             this.vexScaler = new VexFlowScaler();
             this.vexCredits = new VexFlowCredits({ vexScaler: this.vexScaler });
             this.vexStaves = new VexFlowStaves({ vexScaler: this.vexScaler });
+            this.vexNotes = new VexFlowNotes();
         },
 
         setScoreMetaData: function(properties){
@@ -70,6 +73,12 @@ function(
                 time: this.isNewSystem && this.isNewPage 
             };
             this.vexStaves.renderStaves(this.vexCanvas.getContext(), measure, this.measureAttributes, options);
+        },
+
+        renderNotes: function(staffNumber, chords){
+            var stave = this.vexStaves.getStave(staffNumber);
+            var ctx = this.vexCanvas.getContext();
+            this.vexNotes.renderNotes(ctx, stave, chords);
         },
 
         _renderCredits: function()

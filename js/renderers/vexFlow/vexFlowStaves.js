@@ -8,7 +8,7 @@ define([
     Vex                                                
 ) {
 
-    var VexStaves = function(options) {
+    function VexStaves (options) {
 
         if(!options || !options.vexScaler)
         {
@@ -16,7 +16,7 @@ define([
         }
 
         this.vexScaler = options.vexScaler;
-    };
+    }
 
     _.extend(VexStaves.prototype, {
 
@@ -32,17 +32,31 @@ define([
                     var stave = new Vex.Flow.Stave(this.x, y, width);
                     this._decorateStave(stave, i, measure, measureAttributes, options);
                     stave.setContext(ctx).draw();
+                    this.staves[i] = {
+                        staffNumber: i,
+                        vexStave: stave,
+                        clef: this._getClef(i, measureAttributes)
+                    };
                 }
             }
 
             this.x += width;
-            console.log(arguments);
         },
 
         reset: function()
         {
             this.x = 0;
             this.y = (_.isUndefined(this.y)) ? 100 : this.y + 200;
+            this.staves = {};
+        },
+
+        getStave: function(staffNumber)
+        {
+            if(!this.staves[staffNumber])
+            {
+                throw new Error("No stave defined for staff number " + staffNumber);
+            }
+            return this.staves[staffNumber];
         },
 
         _shouldPrintStave: function(staffNumber, measureAttributes)
@@ -55,15 +69,11 @@ define([
 
             if(options.clef)
             {
-                    var clef = _.find(measureAttributes.clef, {number: staffNumber });
-                    if(clef)
-                    {
-                            var clefType = this.clefTypes[clef.sign];
-                            if(clefType)
-                            {
-                                    stave.addClef(clefType); 
-                            }
-                    }
+                var clefType = this._getClef(staffNumber, measureAttributes);
+                if(clefType)
+                {
+                        stave.addClef(clefType); 
+                }
             } 
 
             if(options.time && measureAttributes.time)
@@ -135,6 +145,17 @@ define([
             "-6,major" : "Gb",
             "-7,major" : "B"
         },
+
+        _getClef: function(staffNumber, measureAttributes)
+        {
+            var clef = _.find(measureAttributes.clef, {number: staffNumber });
+            if(clef)
+            {
+                return this.clefTypes[clef.sign];
+            }
+
+            throw new Error("Unknown clef for staff number " + staffNumber);
+        }
 
     });
 

@@ -8,7 +8,7 @@ define([
     Vex                        
 ) {
 
-    var VexCredits = function(options) {
+    function VexCredits(options) {
 
         if(!options || !options.vexScaler)
         {
@@ -17,7 +17,7 @@ define([
 
         this.vexScaler = options.vexScaler;
 
-    };
+    }
 
     _.extend(VexCredits.prototype, {
 

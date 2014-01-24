@@ -79,8 +79,8 @@ define([
                 // get the voice for this note, or create a new one
                 var voice = this._getVoice(note);    
          
-                // "isChord" means the XML wants this note to be drawn in a chord with the previous note
-                if (note.isChord) {
+                // "chord" means the XML wants this note to be drawn in a chord with the previous note
+                if (note.chord) {
 
                     // note that the first note of a chord doesn't have the <chord /> child, just the rest of the notes            
                     // so, we should always have at least one chord here to work with
@@ -93,7 +93,7 @@ define([
                         }
 
                     } else {
-                        throw new Error("note: Unexpected condition: note.isChord is true but the voice has no chords.", note, voice);
+                        throw new Error("note: Unexpected condition: note.chord is true but the voice has no chords.", note, voice);
                     }
                 } else {
 
@@ -105,8 +105,8 @@ define([
 
         _doesNoteFitChord: function(note, chord) {
             var firstNoteOfChord = chord[0];
-            var ret = (firstNoteOfChord.isRest === false &&
-                note.isRest === false &&
+            var ret = (firstNoteOfChord.rest === false &&
+                note.rest === false &&
                 firstNoteOfChord.staff        === note.staff &&
                 firstNoteOfChord.voice        === note.voice);
 
@@ -120,7 +120,12 @@ define([
         _render: function () {
                 
             _.each(this._voices, function(voice) {
-      
+    
+                _.each(voice.chords, function(chord)
+                {
+                    this._sortChordNotes(chord);
+                }, this);
+
                 // Draw the chord onto the staves
                 this.renderer.renderNotes(voice.staff, voice.chords);
                 
@@ -130,14 +135,26 @@ define([
 
         },
 
+        _sortChordNotes: function(chord)
+        {
+            // sort the chord notes
+            if (chord.length > 1) {       
+               chord.sort(function(a,b) {
+                  return (a.pitch.octave === b.pitch.octave ?
+                     (a.pitch.step < b.pitch.step ? -1 : 1) :
+                     (a.pitch.octave < b.pitch.octave ? -1 : 1));
+               });
+            }
+        },
+
         _getVoice: function (note) {
         
-            if(!note.voice && !note.isChord)
+            if(!note.voice && !note.chord)
             {
                 throw new Error("Note has no voice and is not part of a chord", note);
             }
 
-            if(!note.voice && note.isChord)
+            if(!note.voice && note.chord)
             {
                 if(!this._currentVoice)
                 {
@@ -174,16 +191,27 @@ define([
     {
         _.extend(this, xml2json($xmlNote));
 
-        // a few basic attributes
+        // a few extra
         _.extend(this, {
-            isRest     : (0 < $xmlNote.children('rest').length),
-            isChord    : (0 < $xmlNote.children('chord').length),
             isIgnore   : ($xmlNote.attr('print-object') === "no"),
-            isStaccato : $xmlNote.find("articulations > staccato").length > 0
+            isStaccato : $xmlNote.find("articulations > staccato").length > 0,
+            rest: _.has(this, "rest") ? true : false,
+            chord: _.has(this, "chord") ? true : false
         });
 
+
+        // fix accidentals
+        if(_.has(this.pitch, "alter"))
+        {
+            this.accidental = ["bb","b","n","#","##"][2 + this.pitch.alter];
+        }
+        else
+        {
+            delete this.accidental;
+        }
+
         // fix problem w/ rest having no voice
-        if(this.isRest && !this.voice && this.staff)
+        if(this.rest && !this.voice && this.staff)
         {
             this.voice = this.staff;
         }

@@ -8,12 +8,12 @@ define([
     Vex                        
 ) {
 
-    var VexCanvas = function(options) {
+    function VexCanvas(options) {
         this.height = 0;
         this.width = 0;
         this.domCanvas = options.canvas;
         this.vexRenderer = new Vex.Flow.Renderer(this.domCanvas, Vex.Flow.Renderer.Backends.CANVAS); // RAPHAEL pauses and then shows nothing
-    };
+    }
 
     _.extend(VexCanvas.prototype, {
 

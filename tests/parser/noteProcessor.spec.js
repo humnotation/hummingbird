@@ -143,8 +143,8 @@ function(
                     expect(notes.length).to.eql(5);
 
                     var expectedValue = [
-                        [{isRest: true, duration: 256 }],
-                        [{isRest: true, duration: 128 }],
+                        [{rest: true, duration: 256 }],
+                        [{rest: true, duration: 128 }],
                         [{pitch: {step: "A", octave: 4}, duration: 128 }],
                         [{pitch: {step: "F", octave: 5}, duration: 128 }],
                         [{pitch: {step: "E", octave: 5}, duration: 128 }]
@@ -169,7 +169,7 @@ function(
 
                     var expectedValue = [
                         [{pitch: {step: "B", octave: 5, alter: -1}, duration: 256 }],
-                        [{isRest: true, duration: 256}],
+                        [{rest: true, duration: 256}],
                         [{pitch: {step: "G", octave: 5}, duration: 128 }],
                         [{pitch: {step: "B", octave: 5, alter: -1}, duration: 128 }]
                     ];

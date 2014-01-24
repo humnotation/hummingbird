@@ -6,6 +6,15 @@ module.exports = function(grunt)
 {
     grunt.initConfig(
     {
+        svgToVexFont:
+        {
+            hummingbird:
+            {
+                src: ["svg/**/*.svg"],
+                dest: "js/renderers/vexFlow/hummingbirdVexGlyphs.js"
+            }
+        },
+
         jshint:
         {
             parser:
@@ -119,6 +128,8 @@ module.exports = function(grunt)
     grunt.loadNpmTasks("grunt-contrib-watch");
     grunt.loadNpmTasks("grunt-mocha");
     grunt.loadNpmTasks("grunt-web-server");
+    grunt.loadNpmTasks("grunt-svg2ttf");
+    grunt.loadTasks("grunt_tasks");
 
     // TESTING:
     grunt.registerTask("test", ["jshint", "mocha:test"]);

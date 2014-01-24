@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <title>Humming Bird Notation XML Parser</title>
+
+  <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css" media="screen">
+
+  <script src="../js/libs/requirejs/require.js"></script>
+  <script src="../js/requireJsConfig.js"></script>
+
+</head>
+<body>
+
+
+<div>
+  <canvas id="glyphs" width="1114" height="1414" style="background-color: #FFFFD0"></canvas>
+</div>
+
+
+<script>
+
+requirejs(
+[
+  "lodash", 
+  "jquery",
+  "renderers/vexFlow/vexFlowHummingbirdFont"
+],
+function(
+  lodash,
+  $,
+  VexFlowHummingbirdFont
+)
+{
+
+
+  $(document).ready(function() {
+
+    var canvas = document.getElementById("glyphs");
+    var x = 50;
+
+    // Get number of glyphs and rename elements
+    var counter = 0;
+    for (var glyph in Vex.Flow.Font.glyphs) {
+      Vex.Flow.Font.glyphs[glyph] = Vex.Flow.Font.glyphs[glyph];
+      counter++;
+    }
+
+    var canvas_height = counter * 100;
+    canvas.height = canvas_height;
+    canvas.width = 800;
+
+    var ctx = canvas.getContext("2d");
+    ctx.font = "16pt Arial";
+
+    var y = 60;
+    for (var glyph in Vex.Flow.Font.glyphs) {
+      ctx.fillStyle = "#666";
+      ctx.fillText(glyph, x, y);
+      y += 60;
+
+      ctx.fillStyle = "green";
+
+      if (Vex.Flow.Font.glyphs[glyph].o) {
+        g = new Vex.Flow.Glyph(glyph, 40);
+        g.render(ctx, x, y);
+        ctx.save();
+        ctx.font = "6pt Arial";
+        var metrics = g.getMetrics();
+        ctx.fillText(Math.floor(g.getMetrics().width), x - 25, y - 15 );
+        ctx.restore();
+      }
+      y += 60;
+
+    }
+    
+  });
+
+
+
+
+});
+</script>
+
+
+</body>
+</html>
+
+
