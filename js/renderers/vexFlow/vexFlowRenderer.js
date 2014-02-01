@@ -21,7 +21,7 @@ function(
 
         _init: function(options)
         {
-            this.constructor.__super__._init.apply(this, arguments);
+            BasicRenderer.prototype._init.apply(this, arguments);
 
             if(!options || !options.canvas)
             {
@@ -36,7 +36,7 @@ function(
                 this.vexCanvas.clear();
             }
             
-            this.constructor.__super__.reset.apply(this, arguments);
+            BasicRenderer.prototype.reset.apply(this, arguments);
             this.vexCanvas = new VexFlowCanvas(this.options);
             this.vexScaler = new VexFlowScaler();
             this.vexCredits = new VexFlowCredits({ vexScaler: this.vexScaler });
@@ -45,13 +45,13 @@ function(
         },
 
         setScoreMetaData: function(properties){
-            this.constructor.__super__.setScoreMetaData.apply(this, arguments);
+            BasicRenderer.prototype.setScoreMetaData.apply(this, arguments);
             this.vexScaler.init(properties.defaults);
         },
 
         renderNewPage: function(page)
         {
-            this.constructor.__super__.renderNewPage.apply(this, arguments);
+            BasicRenderer.prototype.renderNewPage.apply(this, arguments);
             if(this._pageIsVisible())
             {
                 this._clearCanvas();
@@ -61,7 +61,7 @@ function(
         },
 
         renderNewSystem: function(system){
-            this.constructor.__super__.renderNewSystem.apply(this, arguments);
+            BasicRenderer.prototype.renderNewSystem.apply(this, arguments);
             this.vexStaves.reset();
         },
 

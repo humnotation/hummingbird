@@ -38,6 +38,10 @@
       <div class="navbar-inner">
         <div class="container">
           <a class="brand" href="#">Humming Bird</a>
+          <select name="renderer" style="width:auto;">
+          <option value="hummingbird">Use Hummingbird VexFlow Renderer</option>
+          <option value="standard">Use standard VexFlow Renderer</option>
+          </select>
           <input type="file" id="files" name="file" />
           <div id="progress_bar"><div class="percent">0%</div></div>
           <div id="error-message"></div>
@@ -62,7 +66,8 @@ requirejs(
   "parser/musicXMLParser",
   "renderers/multiRenderer",
   "renderers/consoleRenderer",
-  "renderers/vexFlow/vexFlowRenderer"
+  "renderers/vexFlow/vexFlowRenderer",
+  "renderers/vexFlow/vexFlowHummingbirdRenderer"
 ],
 function(
   lodash,
@@ -72,7 +77,8 @@ function(
   MusicXMLParser,
   MultiRenderer,
   ConsoleRenderer,
-  vexFlowRenderer
+  StandardVexFlowRenderer,
+  HummingbirdVexFlowRenderer
 )
 {
 
@@ -81,20 +87,48 @@ function(
 
   $(document).ready(function() {
 
-    var multiRenderer = new MultiRenderer();
-    multiRenderer.addRenderer(new vexFlowRenderer({canvas: $("#canvas")[0]}));
-    multiRenderer.addRenderer(new ConsoleRenderer());
+    var parseAndRender = function(music)
+    {
+      var vexRenderer = $("select[name=renderer]").val() === "hummingbird" ? HummingbirdVexFlowRenderer : StandardVexFlowRenderer;
 
-    parser = new MusicXMLParser({
-      renderer: multiRenderer
+      var multiRenderer = new MultiRenderer();
+      multiRenderer.addRenderer(new vexRenderer({canvas: $("#canvas")[0]}));
+      multiRenderer.addRenderer(new ConsoleRenderer());
+
+      parser = new MusicXMLParser({
+        renderer: multiRenderer
+      });
+
+      parser.parseMusic(music);
+    };
+
+    var validateFileName = function(file)
+    {
+      var valid = file.type === "text/xml" || /.*\.xml$/.test(file.name);
+
+      if(!valid)
+      {
+        alert("File " + file.name + " does not seem to be an xml file");
+      }
+
+      return valid;
+    };
+
+    var $fileInput = $("input[name=file]");
+    var uploader = new FileUploader({
+      input: $fileInput[0],
+      callback: parseAndRender,
+      progress: updateProgress,
+      start: updateProgress,
+      validator: validateFileName
     });
 
-
-    new FileUploader({
-      input: $("input[name=file]")[0],
-      callback: _.bind(parser.parseMusic, parser),
-      progress: updateProgress,
-      start: updateProgress
+    $("select[name=renderer]").on("change", function()
+    {
+      if($fileInput[0].files && $fileInput[0].files.length)
+      {
+        uploader.processFile();
+      }
     });
 
   });

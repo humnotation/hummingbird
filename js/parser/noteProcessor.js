@@ -137,11 +137,21 @@ define([
 
         _sortChordNotes: function(chord)
         {
+            var pitchOrder = {
+                C: 0,
+                D: 1,
+                E: 2,
+                F: 3,
+                G: 4,
+                A: 5,
+                B: 6
+            };
+            
             // sort the chord notes
             if (chord.length > 1) {       
                chord.sort(function(a,b) {
                   return (a.pitch.octave === b.pitch.octave ?
-                     (a.pitch.step < b.pitch.step ? -1 : 1) :
+                     (pitchOrder[a.pitch.step] < pitchOrder[b.pitch.step] ? -1 : 1) :
                      (a.pitch.octave < b.pitch.octave ? -1 : 1));
                });
             }

@@ -1,17 +1,19 @@
 define([
     "lodash",
     "jquery",
-    "vexflow",
-    "./vexFlowHummingbirdFont"
+    "extend",
+    "vexflow"
 ], function(
     _,
     $,
-    Vex,
-    HummingbirdFont
+    extend,
+    Vex
 ) {
 
     function VexNotes(options) {}
 
+    VexNotes.extend = extend;
+    
     _.extend(VexNotes.prototype, {
 
         renderNotes: function(ctx, stave, chords)
@@ -108,14 +110,12 @@ define([
         {
             var key = note.pitch.step.toLowerCase() + (_.has(note, "accidental") ? note.accidental : "") + "/" + note.pitch.octave;
 
-            /*
-            if(this._noteShapeTable[note.pitch.step])
+            var glyphName = this._getNoteGlyphName(note);
+            if(glyphName)
             {
-                key += "/" + this._noteShapeTable[.pitch.step];
+                key += "/" + glyphName;
             }
-            */
 
-            key += "/hum_note_08_e_flat";
             return key;
         },
 
@@ -155,16 +155,9 @@ define([
            "2" : "d/3"
         },
 
-        _noteShapeTable: {
-           // Proof of Concept for Shape Notes
-           // todo: make symbols and glyphs for HummingBird
-           "A" : "T1",
-           "B" : "X0",
-           "C" : "X3",
-           "D" : "T3",
-           "E" : "D0",
-           "F" : "D2",
-           "G" : "X2"
+        _getNoteGlyphName: function(note)
+        {
+            return undefined;
         }
 
     });

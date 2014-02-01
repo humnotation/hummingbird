@@ -22,11 +22,20 @@ define([
 
         _init: function()
         {
-            this.$input.on("change", _.bind(this.handleFileSelect, this));
+            this.$input.on("change", _.bind(this.processFile, this));
         },
 
-        handleFileSelect: function(evt) {
+        processFile: function() {
 
+            var file = this.$input[0].files[0];
+
+            if(this.options.validator)
+            {
+                if(!this.options.validator(file))
+                {
+                    return;
+                }
+            }
             var reader = new FileReader();
 
             if(this.options.progress)
@@ -53,7 +62,8 @@ define([
             reader.onload = _.bind(this._onLoad, this);
 
             // Read in the image file as a binary string.
-            reader.readAsBinaryString(evt.target.files[0]);
+            reader.readAsBinaryString(file);
+
         },
 
         _onLoad: function(evt)

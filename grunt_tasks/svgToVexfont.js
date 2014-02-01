@@ -55,7 +55,7 @@ var fs = require('fs');
 var $ = require('cheerio');
 var _ = require("lodash");
 
-var scaleFactor = 70;
+var scaleFactor = 60;
 
 module.exports = function(grunt) {
 
