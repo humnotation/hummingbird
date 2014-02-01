@@ -128,7 +128,6 @@ module.exports = function(grunt)
     grunt.loadNpmTasks("grunt-contrib-watch");
     grunt.loadNpmTasks("grunt-mocha");
     grunt.loadNpmTasks("grunt-web-server");
-    grunt.loadNpmTasks("grunt-svg2ttf");
     grunt.loadTasks("grunt_tasks");
 
     // TESTING:

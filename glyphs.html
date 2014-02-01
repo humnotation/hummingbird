@@ -54,23 +54,36 @@ function(
     ctx.font = "16pt Arial";
 
     var y = 60;
-    for (var glyph in Vex.Flow.Font.glyphs) {
-      ctx.fillStyle = "#666";
-      ctx.fillText(glyph, x, y);
-      y += 60;
 
-      ctx.fillStyle = "green";
+    for (var glyph in Vex.Flow.Font.glyphs) {
+
+      if(glyph.indexOf("hum") !== 0)
+      {
+        continue;
+      }
 
       if (Vex.Flow.Font.glyphs[glyph].o) {
+
+        // draw the text at x, y
+        ctx.fillStyle = "#666";
+        ctx.fillText(glyph, x, y);
+
+        // draw the glyph below
+        ctx.fillStyle = "green";
         g = new Vex.Flow.Glyph(glyph, 40);
-        g.render(ctx, x, y);
-        ctx.save();
-        ctx.font = "6pt Arial";
-        var metrics = g.getMetrics();
-        ctx.fillText(Math.floor(g.getMetrics().width), x - 25, y - 15 );
-        ctx.restore();
+        g.render(ctx, x, y + 30);
+
       }
-      y += 60;
+
+      if(x === 350)
+      {
+        x = 50;
+        y += 120;
+      } 
+      else
+      {
+        x = 350;
+      }
 
     }
     
