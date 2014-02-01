@@ -1,0 +1,14 @@
+{
+  "name": "hummingbirdnotation",
+  "private": false,
+  "version": "0.1.0",
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-contrib-jshint": "~0.6.4",
+    "grunt-contrib-watch": "~0.5.3",
+    "grunt-mocha": "~0.4.10",
+    "grunt-web-server": "~1.2.3",
+    "lodash": "~2.2.1",
+    "cheerio": "~0.13.1"
+  }
+}

@@ -2,37 +2,12 @@
 <html>
 <head>
   <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
-  <title>Humming Bird</title>
+  <title>Humming Bird Notation XML Parser</title>
 
   <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css" media="screen">
 
-
-  <!-- Useful Javascript -->
-  <script src="js/libs/jquery-min.js"></script>
-  <script src="js/libs/raphael.js"></script>
-  <script src="js/libs/bootstrap.min.js"></script>
-
-  <!-- VexFlow Compiled Source -->
-  <script src="js/libs/vexflow-free.js"></script>
-
-  <!-- MusicXML to Vexflow: Parser -->
-  <script src="js/xml_parser/MXVF.js"></script>
-  <script src="js/xml_parser/inputParams.js"></script>
-  <script src="js/xml_parser/page.js"></script>
-  <script src="js/xml_parser/readMusic.js"></script>
-  <script src="js/xml_parser/writeMusic.js"></script>
-  <script src="js/xml_parser/scaling.js"></script>
-  <script src="js/xml_parser/measurePrint.js"></script>
-  <script src="js/xml_parser/staffStepper.js"></script>
-  <script src="js/xml_parser/measureAttributes.js"></script>
-  <script src="js/xml_parser/measure.js"></script>
-  <script src="js/xml_parser/canvas.js"></script>
-  <script src="js/xml_parser/credits.js"></script>
-  <script src="js/xml_parser/staves.js"></script>
-  <script src="js/xml_parser/note.js"></script>
-  <script src="js/xml_parser/ties.js"></script>
-
-
+  <script src="js/libs/requirejs/require.js"></script>
+  <script src="js/requireJsConfig.js"></script>
 
 <style>
   #progress_bar {
@@ -63,8 +38,11 @@
       <div class="navbar-inner">
         <div class="container">
           <a class="brand" href="#">Humming Bird</a>
+          <select name="renderer" style="width:auto;">
+          <option value="hummingbird">Use Hummingbird VexFlow Renderer</option>
+          <option value="standard">Use standard VexFlow Renderer</option>
+          </select>
           <input type="file" id="files" name="file" />
-          <button class="btn" onclick="abortRead();">Cancel read</button>
           <div id="progress_bar"><div class="percent">0%</div></div>
           <div id="error-message"></div>
         </div>
@@ -79,77 +57,99 @@
 
 <script>
 
-  $(document).ready(function() {
-      MXVF.canvas.init($("#canvas")[0]);
+requirejs(
+[
+  "lodash",
+  "bootstrap",
+  "jquery",
+  "fileUploader",
+  "parser/musicXMLParser",
+  "renderers/multiRenderer",
+  "renderers/consoleRenderer",
+  "renderers/vexFlow/vexFlowRenderer",
+  "renderers/vexFlow/vexFlowHummingbirdRenderer"
+],
+function(
+  lodash,
+  bootstrap,
+  $,
+  FileUploader,
+  MusicXMLParser,
+  MultiRenderer,
+  ConsoleRenderer,
+  StandardVexFlowRenderer,
+  HummingbirdVexFlowRenderer
+)
+{
 
-      // This is now only being done to set the visible page
-      // But that can also be removed if we have multiple pages render
-      MXVF.setInputParams();             
+
+  var parser;
+
+  $(document).ready(function() {
+
+    var parseAndRender = function(music)
+    {
+      var vexRenderer = $("select[name=renderer]").val() === "hummingbird" ? HummingbirdVexFlowRenderer : StandardVexFlowRenderer;
+
+      var multiRenderer = new MultiRenderer();
+      multiRenderer.addRenderer(new vexRenderer({canvas: $("#canvas")[0]}));
+      multiRenderer.addRenderer(new ConsoleRenderer());
+
+      parser = new MusicXMLParser({
+        renderer: multiRenderer
+      });
+
+      parser.parseMusic(music);
+    };
+
+    var validateFileName = function(file)
+    {
+      var valid = file.type === "text/xml" || /.*\.xml$/.test(file.name);
+
+      if(!valid)
+      {
+        alert("File " + file.name + " does not seem to be an xml file");
+      }
+
+      return valid;
+    };
+
+    var $fileInput = $("input[name=file]");
+    var uploader = new FileUploader({
+      input: $fileInput[0],
+      callback: parseAndRender,
+      progress: updateProgress,
+      start: updateProgress,
+      validator: validateFileName
+    });
+
+    $("select[name=renderer]").on("change", function()
+    {
+      if($fileInput[0].files && $fileInput[0].files.length)
+      {
+        uploader.processFile();
+      }
+    });
 
   });
 
-  var reader;
+
   var progress = document.querySelector('.percent');
 
-  function abortRead() {
-    reader.abort();
-  }
-
-  function errorHandler(evt) {
-    switch(evt.target.error.code) {
-      case evt.target.error.NOT_FOUND_ERR:
-        alert('File Not Found!');
-        break;
-      case evt.target.error.NOT_READABLE_ERR:
-        alert('File is not readable');
-        break;
-      case evt.target.error.ABORT_ERR:
-        break; // noop
-      default:
-        alert('An error occurred reading this file.');
-    };
-  }
 
   function updateProgress(evt) {
     // evt is an ProgressEvent.
-    if (evt.lengthComputable) {
-      var percentLoaded = Math.round((evt.loaded / evt.total) * 100);
-      // Increase the progress bar length.
-      if (percentLoaded < 100) {
-        progress.style.width = percentLoaded + '%';
-        progress.textContent = percentLoaded + '%';
-      }
+    var percentLoaded = 0;
+    if (evt && evt.total > 0 && evt.lengthComputable) {
+      percentLoaded = Math.round((evt.loaded / evt.total) * 100);
     }
+    $(".progress_bar").addClass("loading");
+    $(".percent").css("width", percentLoaded + '%');
+    $(".percent").text(percentLoaded + "%");
   }
 
-  function handleFileSelect(evt) {
-    // Reset progress indicator on new file selection.
-    progress.style.width = '0%';
-    progress.textContent = '0%';
 
-    reader = new FileReader();
-    reader.onerror = errorHandler;
-    reader.onprogress = updateProgress;
-    reader.onabort = function(e) {
-      alert('File read cancelled');
-    };
-    reader.onloadstart = function(e) {
-      document.getElementById('progress_bar').className = 'loading';
-    };
-    reader.onload = function(e) {
-      // Ensure that the progress bar displays 100% at the end.
-      console.log('finished');
-      progress.style.width = '100%';
-      progress.textContent = '100%';
-      setTimeout("document.getElementById('progress_bar').className='';", 2000);
-      MXVF.readMusic(e.target.result);
-    }
-
-    // Read in the image file as a binary string.
-    reader.readAsBinaryString(evt.target.files[0]);
-  }
-
-  document.getElementById('files').addEventListener('change', handleFileSelect, false);
+});
 </script>
 
 
