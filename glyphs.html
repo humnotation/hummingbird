@@ -12,6 +12,10 @@
 </head>
 <body>
 
+<div>
+  <button class="larger">Increase Size</button>
+  <button class="smaller">Decrease Size</button>
+</div>
 
 <div>
   <canvas id="glyphs" width="1114" height="1414" style="background-color: #FFFFD0"></canvas>
@@ -34,7 +38,9 @@ function(
 {
 
 
-  $(document).ready(function() {
+  var glyphSize = 40;
+
+  function renderGlyphs() {
 
     var canvas = document.getElementById("glyphs");
     var x = 50;
@@ -48,7 +54,6 @@ function(
 
     var canvas_height = counter * 100;
     canvas.height = canvas_height;
-    canvas.width = 800;
 
     var ctx = canvas.getContext("2d");
     ctx.font = "16pt Arial";
@@ -70,26 +75,42 @@ function(
 
         // draw the glyph below
         ctx.fillStyle = "green";
-        g = new Vex.Flow.Glyph(glyph, 40);
+        g = new Vex.Flow.Glyph(glyph, glyphSize);
         g.render(ctx, x, y + 30);
 
       }
 
-      if(x === 350)
+      if(x !== 50)
       {
         x = 50;
-        y += 120;
+        y += (glyphSize * 1.5);
       } 
       else
       {
-        x = 350;
+        x = (glyphSize * 5);
       }
 
     }
     
+  }
+
+  $(document).ready(renderGlyphs);
+
+  $("button.larger").on("click", function()
+  {
+    glyphSize += 20;
+    renderGlyphs();
   });
 
+  $("button.smaller").on("click", function()
+  {
+    if(glyphSize > 40)
+    {
+      glyphSize -= 20;
+      renderGlyphs();
+    }
 
+  });
 
 
 });
