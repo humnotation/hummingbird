@@ -1,3 +1,6 @@
 .DS_Store
 *.swp
 .sass-cache/
+hummingbird_original/
+/vexflow/
+todo.txt

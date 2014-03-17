@@ -1,0 +1,14 @@
+{
+  "name": "sinon-chai",
+  "_cacheHeaders": {
+    "ETag": "\"74482b8cb313ee79b09d8280846a5e4f\"",
+    "Content-Length": "4529",
+    "Content-Type": "text/plain; charset=utf-8",
+    "Content-Disposition": "inline"
+  },
+  "_release": "e-tag:74482b8cb",
+  "main": "index.js",
+  "_source": "https://raw.github.com/domenic/sinon-chai/2.4.0/lib/sinon-chai.js",
+  "_target": "*",
+  "_originalSource": "https://raw.github.com/domenic/sinon-chai/2.4.0/lib/sinon-chai.js"
+}
