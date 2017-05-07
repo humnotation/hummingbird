@@ -1,31 +1,31 @@
 hummingbird
 ===========
 
-##What is this?
+## What is this?
 
 A javascript library for rendering music notation in Hummingbird notation (details about Hummingbird at www.HummingbirdNotation.com)
 
 
-##Contributing
+## Contributing
 
-1.) Fork the repo
+1. Fork the repo
 
-2.) Clone it down to your machine.
+2. Clone it down to your machine.
 
-3.) Make a feature branch, and work on something (See "To Do and Known Issues")
+3. Make a feature branch, and work on something (See "To Do and Known Issues")
 
-4.) When it's ready, pull request back. Try to keep PR's small.
+4. When it's ready, Pull request back. Try to keep PR's small.
 
 
-##Getting Started
+## Getting Started
 
 Assuming you've forked and cloned the repo, then you should...
 
-1.) `npm install`
+1. `npm install`
 
-2.) Open index.html to see a couple things.
+2. Open index.html to see a couple things.
 
-##What's in here?
+## What's in here?
 
 This project consists of these main components:
 
@@ -120,9 +120,9 @@ If the html and css are well structured, it should be possible to handle the mos
 Ultimately the goal is to be able to also save output as pdf documents, preferably without having to write
 a new renderer but by consuming the html/canvas output and converting to pdf
 
-=========================
+-------------------------
 
-###License
+### License
 
       * Copyright 2013 Blake West and Mike Sall
 
